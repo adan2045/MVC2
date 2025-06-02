@@ -1,5 +1,4 @@
 <?php
-require 'config/database.php';
-$stmt = $pdo->query("SELECT * FROM mesas");  // Consulta de prueba
-print_r($stmt->fetchAll());
+echo "Hola, esto es una prueba cruda.";
+phpinfo();
 ?>

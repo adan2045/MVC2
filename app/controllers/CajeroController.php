@@ -25,9 +25,12 @@ Class CajeroController extends Controller {
 			"footer" => $footer,
 		]);
 	}
-	<?php
+}
+?>
 
-class CajeroController {
+
+
+class CajeroController extends Controller{
     private $mesaModel;
     private $cuentaModel;
     private $mozoModel;
@@ -42,16 +45,13 @@ class CajeroController {
     }
 
     // Vista principal del cajero
-    public function index() {
-        $data = [
-            'title' => 'Panel de Cajero',
-            'mozos' => $this->mozoModel->getAllMozosWithTables(),
-            'head' => $this->view->render('templates/head'),
-            'nav' => $this->view->render('templates/nav'),
-            'footer' => $this->view->render('templates/footer')
-        ];
-        
-        return $this->view->render('cajero/dashboard', $data);
+    public function actionndex() {
+        Response::render($this->viewDir(__NAMESPACE__), "vistaCajero", [
+			"title" => $this->title . "Mesas",
+			"head" => $head,
+			"nav" => $nav,
+			"footer" => $footer,
+		]);
     }
 
     // Ver detalles de una mesa específica
