@@ -69,7 +69,7 @@
                         Disponible
                     </div>
                     <div class="table-amount">
-                        
+                        $0
                     </div>
                     <div class="action-buttons">
                         <button class="action-btn btn-view">Ver Cuenta</button>
