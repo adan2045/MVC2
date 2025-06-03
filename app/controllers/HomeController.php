@@ -34,7 +34,7 @@ class HomeController extends Controller
 		$path = static::path();
 
 		Response::render($this->viewDir(__NAMESPACE__), "crear", [
-			"title" => $this->title . "Crear cochera",
+			"title" => $this->title . "Crear usuario",
 			"head" => $head,
 			"nav" => $nav,
 		]);
