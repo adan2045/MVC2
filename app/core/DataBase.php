@@ -1,3 +1,4 @@
+
 <?php
 /**
  * Conexión con la Base de Datos utilizando PDO
@@ -5,12 +6,22 @@
 class DataBase
 {
     private static $host = "localhost";
-    private static $dbname = "'bar_db'";
+    private static $dbname = "bar_db";  // Quité las comillas simples que estaban causando error
     private static $dbuser = "root";
     private static $dbpass = "";
 
-    private static $dbh = null; // Database handler
+    private static $instance = null;    // Nueva propiedad para Singleton
+    private static $dbh = null;         // Database handler
     private static $error;
+
+    // Método Singleton para obtener instancia
+    public static function getInstance()
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
     // Obtener una instancia de la conexión PDO
     private static function connection()
@@ -32,6 +43,12 @@ class DataBase
             }
         }
         return self::$dbh;
+    }
+
+    // Método para obtener la conexión directamente (nuevo)
+    public function getConnection()
+    {
+        return self::connection();
     }
 
     // Ejecutar una consulta con parámetros

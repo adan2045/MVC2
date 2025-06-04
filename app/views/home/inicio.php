@@ -5,6 +5,7 @@
 	<title><?=$title?></title>
 </head>
 <body>
+    
 <header>
         <nav>
             <div class="logo-space">Gestion.IO</div>
