@@ -7,6 +7,7 @@ use \DataBase;
 Class CajeroController extends Controller {
 	public $nombre='';
 	public $apellido;
+    
 
 
     public function __construct()
