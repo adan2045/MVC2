@@ -19,7 +19,7 @@ class Response
             }
         }
 
-        $viewPath = APP_PATH . "views/" . $viewDir . $view . ".php";
+        $viewPath = APP_PATH . "views/" . $viewDir . "/" . $view . ".php";
 
         // Verificar si la vista existe antes de cargarla
         if (file_exists($viewPath)) {

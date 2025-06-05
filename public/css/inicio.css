@@ -357,7 +357,7 @@ footer {
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-
+/* vista cajero
 .terminal-info {
     display: flex;
     align-items: center;
@@ -376,7 +376,7 @@ footer {
     font-family: monospace;
 }
 
-/*main {
+main {
     margin-top: 80px;
     padding: 2rem;
     display: grid;
@@ -477,7 +477,7 @@ footer {
     color: #333;
     margin-top: 0.5rem;
 }
-*/
+
 .action-buttons {
     display: flex;
     gap: 0.5rem;
@@ -583,13 +583,4 @@ body.inicio .stat-item {
         grid-template-columns: 1fr;
     }
 }
-
-/*menu*/
-
-
-
-
-
-
-
 

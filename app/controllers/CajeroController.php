@@ -26,9 +26,19 @@ Class CajeroController extends Controller {
 			"footer" => $footer,
 		]);
 	}
-}
-?>
+     public function actionCuenta()
+{
+    // Datos para la vista
+    $data = [
+        "title" => "Cuenta Cerrada"
+    ];
 
+    // Renderiza la vista 'cuenta' dentro de la carpeta 'cajero' pasando los datos
+    Response::render('cajero', 'cuenta', $data);
+}
+}
+
+/*
 
 
 class CajeroController extends Controller{
@@ -46,7 +56,7 @@ class CajeroController extends Controller{
     }
 
     // Vista principal del cajero
-    public function actionndex() {
+    public function actionIndex() {
         Response::render($this->viewDir(__NAMESPACE__), "vistaCajero", [
 			"title" => $this->title . "Mesas",
 			"head" => $head,
@@ -289,4 +299,5 @@ class CajeroController extends Controller{
     }
 }
 
-}
+}*/
+?>
