@@ -16,7 +16,7 @@
         <form class="login-form">
             <div class="form-group">
                 <i class="fas fa-user"></i>
-                <input type="text" class="form-control" placeholder="Usuario" required>
+                <input type="text" class="form-control" placeholder="     Usuario" required>
             </div>
             
             <div class="form-group">

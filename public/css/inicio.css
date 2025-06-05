@@ -358,13 +358,6 @@ footer {
 }
 
 
-
-
-
-
-
-
-
 .terminal-info {
     display: flex;
     align-items: center;
@@ -383,7 +376,7 @@ footer {
     font-family: monospace;
 }
 
-main {
+/*main {
     margin-top: 80px;
     padding: 2rem;
     display: grid;
@@ -484,7 +477,7 @@ main {
     color: #333;
     margin-top: 0.5rem;
 }
-
+*/
 .action-buttons {
     display: flex;
     gap: 0.5rem;
@@ -515,7 +508,7 @@ main {
 .action-btn:hover {
     opacity: 0.9;
 }
-
+/*
 @keyframes pulse {
     0% { opacity: 1; }
     50% { opacity: 0.5; }
