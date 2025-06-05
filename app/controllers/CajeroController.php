@@ -28,9 +28,15 @@ Class CajeroController extends Controller {
 	}
      public function actionCuenta()
 {
+        $footer = SiteController::footer();
+		$head = SiteController::head();
+		$nav = SiteController::nav();
     // Datos para la vista
     $data = [
-        "title" => "Cuenta Cerrada"
+        "title" => "Cuenta Cerrada",
+        "head" => $head,
+		"nav" => $nav,
+		"footer" => $footer,
     ];
 
     // Renderiza la vista 'cuenta' dentro de la carpeta 'cajero' pasando los datos

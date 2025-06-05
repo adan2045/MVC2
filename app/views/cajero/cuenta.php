@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-	
+	<?=$head?>
 	<title><?=$title?></title>
 </head>
-<body>
+
 <body class="cuenta-body">
     <header class="cuenta-header">
         <div class="cuenta-terminal-info">

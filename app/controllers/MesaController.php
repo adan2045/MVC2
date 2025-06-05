@@ -4,7 +4,7 @@ use \Controller;
 use \Response;
 use \DataBase;
 
-Class RegistroUserController extends Controller {
+Class RegistroMesaController extends Controller {
     public function __construct()
 	{
 
