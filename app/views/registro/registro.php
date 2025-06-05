@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
-<!-- quizas haya que sacar el header ya que es un login  -->
+
 <head>
 	<?=$head?>
 	<title><?=$title?></title>
@@ -72,7 +72,7 @@
         </form>
         
         <div class="registro-footer">
-            <p>¿Ya tienes una cuenta? <a href="#">Iniciar Sesión</a></p>
+            <p>¿Ya tienes una cuenta? <a href="http://localhost/MVC2/public/login/login">Iniciar Sesión</a></p>
         </div>
     </div>
 

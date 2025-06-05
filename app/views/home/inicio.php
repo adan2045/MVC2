@@ -7,11 +7,21 @@
 <body>
     
 <header>
-        <nav>
-            <div class="logo-space">Gestion.IO</div>
-           
-            <a href="#" class="cta-button">Iniciar Sesión</a>
-        </nav>
+        
+<header>
+    <nav>
+        <div class="logo-space">Gestion.IO</div>
+        
+        <div class="auth-container">
+            <form action="http://localhost/MVC2/public/login/login" method="post">
+                <button type="submit" class="btn">Iniciar Sesión</button>
+            </form>
+            <form action="http://localhost/MVC2/public/registro/registro" method="post">
+                <button type="submit" class="btn">Registrarse</button>
+            </form>
+        </div>
+    </nav>
+</header>
     </header>
 
 <section class="hero">

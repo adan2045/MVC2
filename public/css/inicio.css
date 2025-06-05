@@ -138,6 +138,10 @@ nav {
     background-color: #f8f9fa;
     color: #000;
 }
+.auth-container {
+    display: flex;
+    gap: 1rem; /* Espacio entre botones */
+}
 
 .menu-content .separator {
     height: 1px;
