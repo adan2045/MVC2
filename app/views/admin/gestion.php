@@ -19,7 +19,7 @@
             <div class="buttons-column">
              <a href="http://localhost/MVC2/public/mesa/listado" class="action-btn">Mesas</a>
              <a href="http://localhost/MVC2/public/usuario/listado" class="action-btn delete-btn">Usuarios</a>
-             <a href="http://localhost/MVC2/public/productos/listado" class="action-btn">Carta</a> <!-- Botón nuevo -->
+             <a href="http://localhost/MVC2/public/producto/listado" class="action-btn">Carta</a> 
 </div>
         </div>
 
