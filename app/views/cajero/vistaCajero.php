@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-	<?=$head?>
-	<title><?=$title?></title>
+    <?= $head ?>
+    <title><?= $title ?? 'Listado de Usuarios' ?></title>
+    <link rel="stylesheet" href="/public/css/crud.css">
+    <link rel="stylesheet" href="/public/css/listado.css">
 </head>
-
 <body class="vistaCajero-body">
     <header class="vistaCajero-header">
         <div class="vistaCajero-terminal-info">

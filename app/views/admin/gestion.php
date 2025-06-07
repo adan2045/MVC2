@@ -14,15 +14,15 @@
                     <div class="local-icon">
                         <i class="fas fa-store"></i>
                     </div>
-                    <h3>Local 1</h3>
+                    <h3>Pizzeria Santa Maria</h3>
                 </div>
                 <div class="buttons-column">
-                    <button class="action-btn">Gestionar</button>
-                    <button class="action-btn delete-btn">Eliminar</button>
+                    <button class="action-btn">Mesas</button>
+                    <button class="action-btn delete-btn">Usuarios</button>
                 </div>
             </div>
             
-            <div class="local-container">
+             <!--<div class="local-container">
                 <div class="local-card">
                     <div class="local-icon">
                         <i class="fas fa-store"></i>
@@ -34,7 +34,7 @@
                     <button class="action-btn delete-btn">Eliminar</button>
                 </div>
             </div>
-            
+-->
             <div class="local-card add-local">
                 <div class="local-icon">
                     <i class="fas fa-plus"></i>

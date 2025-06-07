@@ -9,11 +9,24 @@ class Router {
     }
 
     private function loadRoutes() {
-        $this->add('', 'site', 'index');
-        $this->add('cajero', 'cajero', 'index');
-        $this->add('cajero/mesas', 'cajero', 'mesas');
-    }
+    // Rutas existentes
+    $this->add('', 'site', 'index');
+    $this->add('cajero', 'cajero', 'index');
+    $this->add('cajero/mesas', 'cajero', 'mesas');
 
+    // NUEVAS RUTAS: CRUD Mesas
+    $this->add('mesa/listado', 'mesa', 'listado');
+$this->add('mesa/formulario', 'mesa', 'formulario');
+$this->add('mesa/guardar', 'mesa', 'guardar');
+$this->add('mesa/modificar', 'mesa', 'modificar');
+$this->add('mesa/actualizar', 'mesa', 'actualizar');
+$this->add('mesa/eliminar', 'mesa', 'eliminar');
+
+    // NUEVAS RUTAS: CRUD Usuarios
+    $this->add('usuario/formulario', 'usuario', 'formulario');
+    $this->add('usuario/guardar', 'usuario', 'guardar');
+    $this->add('usuario/listado', 'usuario', 'listado'); // <-- AGREGÁ ESTA
+}
     public function add($route, $controller, $action) {
         $this->routes[$route] = [
             'controller' => $controller,
@@ -23,16 +36,16 @@ class Router {
 
     public function dispatch() {
         $url = $_GET['url'] ?? '';
-        
+
         if (array_key_exists($url, $this->routes)) {
             $controller = $this->routes[$url]['controller'];
             $action = $this->routes[$url]['action'];
-            
+
             $controllerClass = "app\\controllers\\".ucfirst($controller)."Controller";
-            
+
             if (class_exists($controllerClass)) {
                 $controllerInstance = new $controllerClass();
-                
+
                 if (method_exists($controllerInstance, $action.'Action')) {
                     call_user_func([$controllerInstance, $action.'Action']);
                 } else {

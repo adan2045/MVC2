@@ -52,11 +52,11 @@ class DataBase
     }
 
     // Ejecutar una consulta con parámetros
-    public static function query($sql, $params = [])
-    {
-        $statement = self::prepareAndExecute($sql, $params);
-        return $statement->fetchAll(PDO::FETCH_OBJ);
-    }
+    public static function query($sql, $params = [], $asArray = false)
+{
+    $statement = self::prepareAndExecute($sql, $params);
+    return $statement->fetchAll($asArray ? PDO::FETCH_ASSOC : PDO::FETCH_OBJ);
+}
 
     // Ejecutar un SQL que no requiere obtener resultados
     public static function execute($sql, $params = [])
