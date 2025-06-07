@@ -70,3 +70,5 @@ class App
         return isset($url[1]) ? "action" . ucfirst(strtolower($url[1])) : $this->method;
     }
 }
+
+

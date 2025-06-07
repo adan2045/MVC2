@@ -16,6 +16,20 @@
     margin: 2rem;
     overflow: hidden;
 }
+.body-registro main {
+    margin-top: 100px;
+    z-index: 2;
+    position: relative;
+}
+
+
+/* Para que el header se fije arriba siempre */
+body.body-registro header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
 
 .registro-header {
     background: linear-gradient(135deg, #ff6b6b 0%, #ff3333 100%);
@@ -118,6 +132,7 @@
     border-top: 1px solid #eee;
 }
 
+
 .registro-footer a {
     color: #ff3333;
     text-decoration: none;
@@ -128,6 +143,7 @@
 .registro-footer a:hover {
     color: #cc0000;
 }
+
 
 .terms-check {
     margin-bottom: 1.5rem;

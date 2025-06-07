@@ -180,8 +180,8 @@ main {
 }
 
 .local-card {
-    width: 94.5px;
-    height: 94.5px;
+    /*width: 94.5px;*/
+    /* height: 94.5px; <-- BORRÁ esta línea */
     background: linear-gradient(135deg, #ff6b6b 0%, #ff3333 100%);
     border-radius: 10px;
     display: flex;
@@ -241,7 +241,7 @@ main {
 }
 
 .add-local {
-    width: 189.5px;
+    width: 235.5px;
     height: 40.16px;
     background: linear-gradient(135deg, #ff8f8f 0%, #ff4d4d 100%);
     margin-top: 1rem;
@@ -253,6 +253,31 @@ main {
 
 .add-local .local-icon {
     margin-bottom: 0;
+}
+
+.action-btn {
+    display: inline-block; /* Necesario para <a> */
+    text-align: center;
+    line-height: 40.16px; /* Ajustá si el texto no se centra bien */
+    text-decoration: none;
+    width: 80.325px;
+    height: 40.16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff3333 100%);
+    color: white;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(255, 0, 0, 0.2);
+}
+
+.delete-btn {
+    background: linear-gradient(135deg, #ff4d4d 0%, #cc0000 100%);
 }
 
 footer {
@@ -407,6 +432,29 @@ body.inicio .stat-item {
     max-width: 1000px;
     margin: 1rem auto;
     padding: 1.5rem;
+}
+/* Asegura que la fila tenga altura adecuada */
+.local-container {
+    display: flex;
+    gap: 1rem;
+    align-items: stretch;
+    min-height: 145px; /* Igual que 3 botones apilados */
+}
+
+/* Agranda solo la tarjeta pizzería */
+.tall-card {
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Acomoda la columna de botones */
+.buttons-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
 }
 
 /* Ajustes responsivos */

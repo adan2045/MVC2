@@ -106,8 +106,14 @@
     background-color: #a71d2a;
 }
 
+.producto-btn-nuevo {
+    background: linear-gradient(135deg, #FFD700 0%, #FFC300 100%);
+    color: #000;
+}
+
 /* Footer */
 .listado-footer {
     text-align: center;
     padding: 1rem 0;
 }
+

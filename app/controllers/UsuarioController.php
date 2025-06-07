@@ -52,6 +52,24 @@ class UsuarioController extends Controller
         'usuario' => $usuario
     ]);
 }
+
+    public function actionIndex($var = null){
+		self::action404();
+	}
+
+	/*obtiene todos los datos de un usuarios por id o por email según dato ingresado*/
+	public static function GetUser($emailOrId){
+		if (filter_var($emailOrId, FILTER_VALIDATE_EMAIL)) {
+			# obtener datos de usuario por Email
+			$userData = UserModel::findEmail($emailOrId);
+			// var_dump($userData);
+		}else{
+			# obtener datos de usuario por Id
+			$userData = UserModel::findId($emailOrId);
+			// var_dump($userData);
+		}
+		return $userData;
+	}
     public function actionListado()
 {
    
@@ -103,7 +121,7 @@ class UsuarioController extends Controller
     }
 }
     public function actionGuardar()
-    {
+    {echo "Entró a actionGuardar<br>";
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $nombre = $_POST["nombre"] ?? null;
             $apellido = $_POST["apellido"] ?? null;
