@@ -10,30 +10,34 @@ class MesaController extends Controller
     public function actionListado()
     {
         $head = \app\controllers\SiteController::head();
-        $footer = \app\controllers\SiteController::footer();
+		$nav = \app\controllers\SiteController::nav();  // <-- Línea nueva
+		$footer = \app\controllers\SiteController::footer();
 
         $modelo = new MesaModel();
         $mesas = $modelo->obtenerTodas();
 
         Response::render($this->viewDir(__NAMESPACE__), 'listado', [
-            'title' => 'Listado de Mesas',
-            'head' => $head,
-            'footer' => $footer,
-            'mesas' => $mesas
-        ]);
+    	'title' => 'Listado de Mesas',
+    	'head' => $head,
+    	'nav' => $nav,  // <-- Línea nueva
+    	'footer' => $footer,
+    	'mesas' => $mesas
+]);
     }
 
     public function actionFormulario()
-    {
-        $head = \app\controllers\SiteController::head();
-        $footer = \app\controllers\SiteController::footer();
+{
+    $head = \app\controllers\SiteController::head();
+    $nav = \app\controllers\SiteController::nav(); // <- ESTA LÍNEA ES CLAVE
+    $footer = \app\controllers\SiteController::footer();
 
-        Response::render($this->viewDir(__NAMESPACE__), 'formulario', [
-            'title' => 'Nueva Mesa',
-            'head' => $head,
-            'footer' => $footer
-        ]);
-    }
+    Response::render($this->viewDir(__NAMESPACE__), 'formulario', [
+        'title' => 'Nueva Mesa',
+        'head' => $head,
+        'nav' => $nav, // <- ESTA TAMBIÉN
+        'footer' => $footer
+    ]);
+}
 
     public function actionGuardar()
     {

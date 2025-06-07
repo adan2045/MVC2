@@ -10,28 +10,33 @@ class UsuarioController extends Controller
 {
     public function actionFormulario()
     {
-        $head = \app\controllers\SiteController::head();
-        $footer = \app\controllers\SiteController::footer();
+     $head = \app\controllers\SiteController::head();
+     $nav = \app\controllers\SiteController::nav(); // agregar esta línea
+     $footer = \app\controllers\SiteController::footer();
 
-        Response::render($this->viewDir(__NAMESPACE__), "formulario", [
-            "title" => "Alta de Usuario",
-            "head" => $head,
-            "footer" => $footer,
-        ]);
+
+        Response::render($this->viewDir(__NAMESPACE__), 'formulario', [
+        'title' => 'Nueva Mesa',
+        'head' => $head,
+        'nav' => $nav, // agregar esta línea
+        'footer' => $footer
+    ]);
     }
     public function actionListado()
 {
    
     $head = \app\controllers\SiteController::head();
+    $nav = \app\controllers\SiteController::nav();  // <-- Línea nueva
     $footer = \app\controllers\SiteController::footer();
     $usuarioModel = new UsuarioModel();
     $usuarios = $usuarioModel->obtenerTodos();
 
     Response::render($this->viewDir(__NAMESPACE__), "listado", [
-        "title" => "Listado de Usuarios",
-        "head" => $head,
-        "footer" => $footer,
-        "usuarios" => $usuarios
+    "title" => "Listado de Usuarios",
+    "head" => $head,
+    "nav" => $nav,  // <-- Línea nueva
+    "footer" => $footer,
+    "usuarios" => $usuarios
     ]);
 }
 
