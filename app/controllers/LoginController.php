@@ -11,6 +11,19 @@ class LoginController extends Controller
     {
     }
 
+	public function actionInicio()
+	{	
+		$footer = SiteController::footer();
+		$head = SiteController::head();
+		$nav = SiteController::nav();
+		$path = static::path();
+		Response::render($this->viewDir(__NAMESPACE__), "inicio", [
+			"title" => $this->title . "Inicio",
+			"head" => $head,
+			"nav" => $nav,
+			"footer" => $footer,
+		]);
+	}
     public function actionLogin()
     {
         // Variables para mantener los valores en el formulario

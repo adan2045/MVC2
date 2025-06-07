@@ -15,7 +15,7 @@
             </div>
 
             <div class="listado-top-actions">
-                <a href="/usuario/formulario" class="listado-btn listado-btn-nuevo">➕ Nuevo Usuario</a>
+                <a href="http://localhost/MVC2/public/usuario/formulario" class="listado-btn listado-btn-nuevo">➕ Nuevo Usuario</a>
             </div>
 
             <div class="listado-tabla-wrapper">

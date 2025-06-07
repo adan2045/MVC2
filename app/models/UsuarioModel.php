@@ -37,5 +37,29 @@ class UsuarioModel
         return $this->db->query($sql, [], true);
     }
 
-    // Más funciones: editar, listar, eliminar...
+    public function obtenerPorId($id)
+{
+    $sql = "SELECT * FROM usuarios WHERE id = ?";
+    $resultados = DataBase::query($sql, [$id]);
+    return $resultados[0] ?? null;
+}
+
+    public function eliminar($id)
+{
+    $sql = "DELETE FROM usuarios WHERE id = ?";
+    return DataBase::execute($sql, [$id]);
+}
+    public function actualizar($id, $nombre, $apellido, $email, $password, $dni, $rol)
+{
+    if ($password) {
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+        $sql = "UPDATE usuarios SET nombre = ?, apellido = ?, email = ?, password = ?, dni = ?, rol = ? WHERE id = ?";
+        $params = [$nombre, $apellido, $email, $passwordHash, $dni, $rol, $id];
+    } else {
+        $sql = "UPDATE usuarios SET nombre = ?, apellido = ?, email = ?, dni = ?, rol = ? WHERE id = ?";
+        $params = [$nombre, $apellido, $email, $dni, $rol, $id];
+    }
+
+    return DataBase::execute($sql, $params);
+}// Más funciones: editar, listar, eliminar...
 }

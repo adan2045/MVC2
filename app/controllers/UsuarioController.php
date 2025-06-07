@@ -16,12 +16,42 @@ class UsuarioController extends Controller
 
 
         Response::render($this->viewDir(__NAMESPACE__), 'formulario', [
-        'title' => 'Nueva Mesa',
+        'title' => 'Nuevo Usuario',
         'head' => $head,
         'nav' => $nav, // agregar esta línea
         'footer' => $footer
     ]);
     }
+
+    public function actionModificar()
+{
+    $id = $_GET['id'] ?? null;
+
+    if (!$id) {
+        echo "ID inválido";
+        return;
+    }
+
+    $usuarioModel = new UsuarioModel();
+    $usuario = $usuarioModel->obtenerPorId($id);
+
+    if (!$usuario) {
+        echo "Usuario no encontrado";
+        return;
+    }
+
+    $head = \app\controllers\SiteController::head();
+    $nav = \app\controllers\SiteController::nav();
+    $footer = \app\controllers\SiteController::footer();
+
+    Response::render($this->viewDir(__NAMESPACE__), 'formulario', [
+        'title' => 'Modificar Usuario',
+        'head' => $head,
+        'nav' => $nav,
+        'footer' => $footer,
+        'usuario' => $usuario
+    ]);
+}
     public function actionListado()
 {
    
@@ -39,7 +69,39 @@ class UsuarioController extends Controller
     "usuarios" => $usuarios
     ]);
 }
+    public function actionEliminar()
+{
+    $id = $_GET['id'] ?? null;
 
+    if ($id) {
+        $usuarioModel = new UsuarioModel();
+        $usuarioModel->eliminar($id);
+    }
+
+    header('Location: /usuario/listado');
+    exit;
+}   
+    public function actionActualizar()
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $id = $_POST['id'] ?? null;
+        $nombre = $_POST['nombre'] ?? '';
+        $apellido = $_POST['apellido'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $password = $_POST['password'] ?? null;
+        $dni = $_POST['dni'] ?? '';
+        $rol = $_POST['rol'] ?? '';
+
+        $usuarioModel = new UsuarioModel();
+
+        if ($id) {
+            $usuarioModel->actualizar($id, $nombre, $apellido, $email, $password, $dni, $rol);
+        }
+
+        header("Location: /usuario/listado");
+        exit;
+    }
+}
     public function actionGuardar()
     {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -54,8 +116,7 @@ class UsuarioController extends Controller
             if ($nombre && $apellido && $email && $password && $dni && $rol && $terminos) {
                 $usuarioModel = new UsuarioModel();
                 $usuarioModel->guardar($nombre, $apellido, $email, $password, $dni, $rol);
-
-                header("Location: /usuario/formulario"); // redirige donde prefieras
+                header("Location: /usuario/listado");
                 exit;
             } else {
                 echo "Faltan campos requeridos.";

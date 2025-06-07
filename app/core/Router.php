@@ -26,7 +26,12 @@ $this->add('mesa/eliminar', 'mesa', 'eliminar');
     $this->add('usuario/formulario', 'usuario', 'formulario');
     $this->add('usuario/guardar', 'usuario', 'guardar');
     $this->add('usuario/listado', 'usuario', 'listado'); // <-- AGREGÁ ESTA
+    $this->add('usuario/modificar', 'usuario', 'modificar');
+    $this->add('usuario/eliminar', 'usuario', 'eliminar');
+    $this->add('usuario/actualizar', 'usuario', 'actualizar');
 }
+
+
     public function add($route, $controller, $action) {
         $this->routes[$route] = [
             'controller' => $controller,
