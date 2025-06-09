@@ -159,7 +159,7 @@
                 </div>
                 <div class="vistaCajero-action-buttons">
                     <button class="vistaCajero-action-btn vistaCajero-btn-view">Ver Cuenta</button>
-                    <button class="vistaCajero-action-btn vistaCajero-btn-close">Cerrar Mesa</button>
+                    <button class="vistaCajero-action-btn vistaCajero-btn-close">Agregar producto</button>
                 </div>
             </div>
 

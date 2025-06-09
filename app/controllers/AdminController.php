@@ -3,6 +3,7 @@ namespace app\controllers;
 use \Controller;
 use \Response;
 use \DataBase;
+use app\controllers\SesionController;
 
 class AdminController extends Controller{
     // Constructor

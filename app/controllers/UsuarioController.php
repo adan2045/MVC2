@@ -5,6 +5,7 @@ use \Controller;
 use \Response;
 use \DataBase;
 use app\models\UsuarioModel;
+use app\controllers\SesionController;
 
 class UsuarioController extends Controller
 {

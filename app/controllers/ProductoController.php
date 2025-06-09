@@ -4,6 +4,7 @@ namespace app\controllers;
 use \Controller;
 use \Response;
 use app\models\ProductoModel;
+use app\controllers\SesionController;
 
 class ProductoController extends Controller
 {

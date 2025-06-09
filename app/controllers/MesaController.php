@@ -4,11 +4,13 @@ namespace app\controllers;
 use \Controller;
 use \Response;
 use app\models\MesaModel;
+use app\controllers\SesionController;
 
 class MesaController extends Controller
 {
     public function actionListado()
     {
+        SesionController::redirigirSiNoAutenticado();
         $head = \app\controllers\SiteController::head();
 		$nav = \app\controllers\SiteController::nav();  // <-- Línea nueva
 		$footer = \app\controllers\SiteController::footer();
@@ -27,6 +29,7 @@ class MesaController extends Controller
 
     public function actionFormulario()
 {
+    SesionController::redirigirSiNoAutenticado();
     $head = \app\controllers\SiteController::head();
     $nav = \app\controllers\SiteController::nav(); // <- ESTA LÍNEA ES CLAVE
     $footer = \app\controllers\SiteController::footer();
@@ -41,6 +44,7 @@ class MesaController extends Controller
 
     public function actionGuardar()
     {
+        SesionController::redirigirSiNoAutenticado();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $qr_code = $_POST['qr_code'] ?? '';
             $estado = $_POST['estado'] ?? 'libre';
@@ -57,6 +61,7 @@ class MesaController extends Controller
 
     public function actionModificar()
     {
+        SesionController::redirigirSiNoAutenticado();
         $id = $_GET['id'] ?? null;
 
         if (!$id) {
@@ -85,6 +90,7 @@ class MesaController extends Controller
 
     public function actionActualizar()
     {
+        SesionController::redirigirSiNoAutenticado();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = $_POST['id'] ?? null;
             $qr_code = $_POST['qr_code'] ?? '';
@@ -104,6 +110,7 @@ class MesaController extends Controller
 
     public function actionEliminar()
     {
+        SesionController::redirigirSiNoAutenticado();
         $id = $_GET['id'] ?? null;
 
         if ($id) {
