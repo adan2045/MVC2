@@ -17,9 +17,9 @@
                 <h3>Pizzeria Santa Maria</h3>
             </div>
             <div class="buttons-column">
-             <a href="http://localhost/MVC2/public/mesa/listado" class="action-btn">Mesas</a>
-             <a href="http://localhost/MVC2/public/usuario/listado" class="action-btn delete-btn">Usuarios</a>
-             <a href="http://localhost/MVC2/public/producto/listado" class="action-btn">Carta</a> 
+             <a href="<?=$ruta?>mesa/listado" class="action-btn">Mesas</a>
+             <a href="<?=$ruta?>usuario/listado" class="action-btn delete-btn">Usuarios</a>
+             <a href="<?=$ruta?>producto/listado" class="action-btn">Carta</a> 
 </div>
         </div>
 

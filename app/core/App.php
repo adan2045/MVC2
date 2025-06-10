@@ -5,7 +5,7 @@
 class App
 {
     protected $controller = "app\\controllers\\" . "HomeController";
-    protected $method = "actionInicio";
+    protected $method = "actionIndex";
     protected $params = [];
 
     public function __construct()

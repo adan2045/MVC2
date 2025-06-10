@@ -8,8 +8,13 @@ use app\controllers\SesionController;
 
 class MesaController extends Controller
 {
+    public function actionIndex($var = null){
+        echo "Esto es el inicio";
+    }
+    
     public function actionListado()
     {
+        static::path();
         SesionController::redirigirSiNoAutenticado();
         $head = \app\controllers\SiteController::head();
 		$nav = \app\controllers\SiteController::nav();  // <-- Línea nueva
@@ -23,6 +28,7 @@ class MesaController extends Controller
     	'head' => $head,
     	'nav' => $nav,  // <-- Línea nueva
     	'footer' => $footer,
+        'ruta'=> self::$ruta, 
     	'mesas' => $mesas
 ]);
     }

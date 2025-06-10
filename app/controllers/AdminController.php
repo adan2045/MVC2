@@ -12,7 +12,7 @@ class AdminController extends Controller{
 
 	}
 
-	public function actionInicio()
+	public function actionIndex($var=null)
 	{	
 		$footer = SiteController::footer();
 		$head = SiteController::head();
@@ -27,12 +27,14 @@ class AdminController extends Controller{
 	}
 	public function actionGestion()
 	{	
+		static::path();
 		$footer = SiteController::footer();
 		$head = SiteController::head();
 		$nav = SiteController::nav();
 		$path = static::path();
 		Response::render($this->viewDir(__NAMESPACE__), "gestion", [
 			"title" => $this->title . "gestion de locales",
+			'ruta'=>self::$ruta,
 			"head" => $head,
 			"nav" => $nav,
 			"footer" => $footer,

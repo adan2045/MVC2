@@ -15,7 +15,7 @@
             </div>
 
             <div class="mesa-top-actions">
-                <a href="/mesa/formulario" class="mesa-btn mesa-btn-nueva">➕ Nueva Mesa</a>
+                <a href="<?=$ruta?>mesa/formulario" class="mesa-btn mesa-btn-nueva">➕ Nueva Mesa</a>
             </div>
 
             <div class="mesa-tabla-wrapper">
@@ -40,8 +40,8 @@
                                 <td><?= $mesa['estado'] ?></td>
                                 <td>
                                     <div class="mesa-acciones">
-                                        <a href="/mesa/modificar?id=<?= $mesa['id'] ?>" class="mesa-btn-mini">Modificar</a>
-                                        <a href="/mesa/eliminar?id=<?= $mesa['id'] ?>" class="mesa-btn-mini mesa-btn-eliminar" onclick="return confirm('¿Eliminar esta mesa?');">Eliminar</a>
+                                        <a href="<?=$ruta?>mesa/modificar?id=<?= $mesa['id'] ?>" class="mesa-btn-mini">Modificar</a>
+                                        <a href="<?=$ruta?>mesa/eliminar?id=<?= $mesa['id'] ?>" class="mesa-btn-mini mesa-btn-eliminar" onclick="return confirm('¿Eliminar esta mesa?');">Eliminar</a>
                                     </div>
                                 </td>
                             </tr>
