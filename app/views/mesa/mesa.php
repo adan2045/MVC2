@@ -38,7 +38,7 @@
         </form>
 
         <div class="registro-footer">
-            <p><a href="/admin/gestion">Volver a Gestión</a></p>
+            <p><a href="<?=$ruta?>admin/gestion">Volver a Gestión</a></p>
         </div>
     </div>
 

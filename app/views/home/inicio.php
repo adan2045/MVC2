@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-	<?=$head?>
-	<title><?=$title?></title>
+  <link rel="stylesheet" href="/MVC2/css/main.css">
+  <title><?= $title ?? 'Inicio' ?></title>
 </head>
 <body>
     
@@ -13,10 +13,10 @@
         <div class="logo-space">Gestion.IO</div>
         
         <div class="auth-container">
-            <form action="http://localhost/MVC2/public/login/login" method="post">
+            <form action="http://localhost/MVC2/login/login" method="post">
                 <button type="submit" class="btn">Iniciar Sesión</button>
             </form>
-            <form action="http://localhost/MVC2/public/registro/registro" method="post">
+            <form action="http://localhost/MVC2/registro/registro" method="post">
                 <button type="submit" class="btn">Registrarse</button>
             </form>
         </div>
