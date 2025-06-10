@@ -39,6 +39,10 @@ class App
         // Llama al método del controlador con los parámetros
         call_user_func_array([$this->controller, $this->method], $this->params);
     }
+    public static function baseUrl()
+{
+    return rtrim(str_replace('/public', '', dirname($_SERVER['SCRIPT_NAME'])), '/');
+}
 
     // Parsear la URL
     public function parseUrl()

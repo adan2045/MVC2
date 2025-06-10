@@ -13,7 +13,7 @@
                 <h1><?= isset($usuario) ? 'Editar Usuario' : 'Nuevo Usuario' ?></h1>
             </div>
 
-            <form action="<?= isset($usuario) ? '/usuario/actualizar' : '/usuario/guardar' ?>" method="POST" class="registro-form">
+            <form action="<?= isset($usuario) ? $ruta . '/usuario/actualizar' : $ruta . '/usuario/guardar' ?>" method="POST" class="registro-form">
                 <?php if (isset($usuario)): ?>
                     <input type="hidden" name="id" value="<?= $usuario['id'] ?>">
                 <?php endif; ?>
