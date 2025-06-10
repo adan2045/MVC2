@@ -20,12 +20,12 @@ class SiteController extends Controller
 	}
 
 	public static function nav()
-	{
-		static::path();
-		$nav = file_get_contents(APP_PATH . '/views/inc/nav.php');
-		$nav = str_replace('#PATH#', self::$ruta, $nav);
-		return $nav;
-	}
+{
+    $ruta = \App::$ruta;
+    ob_start();
+    include APP_PATH . '/views/inc/nav.php';
+    return ob_get_clean();
+}
 	public static function footer()
 	{
 		static::path();

@@ -4,6 +4,8 @@
  */
 class App
 {
+    public static string $ruta;
+
     protected $controller = "app\\controllers\\" . "HomeController";
     protected $method = "actionIndex";
     protected $params = [];
@@ -11,7 +13,8 @@ class App
     public function __construct()
     {
         $url = $this->parseUrl();
-
+       
+        self::$ruta = rtrim(str_replace('/public', '', dirname($_SERVER['SCRIPT_NAME'])), '/');
         $controllerName = isset($url[0]) ? ucfirst(strtolower($url[0])) . "Controller" : $this->controller;
         $controllerPath = APP_PATH . "controllers/" . $controllerName . ".php";
 

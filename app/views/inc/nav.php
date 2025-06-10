@@ -8,7 +8,9 @@
                 <a href="#"><i class="fas fa-cog"></i>Configuración</a>
                 <a href="#"><i class="fas fa-question-circle"></i>Ayuda</a>
                 <div class="separator"></div>
-                <a href="/sesion/cerrar" class="logout-link"><i class="fas fa-sign-out-alt"></i>Cerrar Sesión</a>
+                <a href="<?= $ruta ?>" class="logout-link">
+                 <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </a>
             </div>
         </div>
         </nav>

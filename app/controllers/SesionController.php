@@ -43,7 +43,7 @@ class SesionController
     session_unset();  // limpia las variables de sesión
     session_destroy(); // destruye la sesión
 
-    header("Location: /login/login"); // redirige al login
+    header("Location: " . self::$ruta . "/admin/gestion");
     exit;
 }
 }

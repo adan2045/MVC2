@@ -77,7 +77,7 @@ class LoginController extends Controller
                             $_SESSION['user_email'] = $usuario['email'];
                             $_SESSION['user_rol'] = $usuario['rol'];
 
-                            header("Location: /admin/gestion");
+                            header("Location: " . self::$ruta . "/admin/gestion");
                             exit();
                         } else {
                             $error_pass = 'Contraseña incorrecta';
@@ -109,4 +109,13 @@ class LoginController extends Controller
             "general_error" => $general_error,
         ]);
     }
+    public function actionLogout()
+{
+    session_start();
+    session_unset();
+    session_destroy();
+
+    header("Location: " . self::$ruta . "/");
+    exit();
+}
 }
