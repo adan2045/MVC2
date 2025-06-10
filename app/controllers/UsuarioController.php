@@ -11,6 +11,7 @@ class UsuarioController extends Controller
 {
     public function actionFormulario()
     {
+        static::path();
      $head = \app\controllers\SiteController::head();
      $nav = \app\controllers\SiteController::nav(); // agregar esta línea
      $footer = \app\controllers\SiteController::footer();
@@ -19,6 +20,7 @@ class UsuarioController extends Controller
         Response::render($this->viewDir(__NAMESPACE__), 'formulario', [
         'title' => 'Nuevo Usuario',
         'head' => $head,
+        'ruta'=>self::$ruta,
         'nav' => $nav, // agregar esta línea
         'footer' => $footer
     ]);
@@ -40,7 +42,7 @@ class UsuarioController extends Controller
         echo "Usuario no encontrado";
         return;
     }
-
+    static::path();
     $head = \app\controllers\SiteController::head();
     $nav = \app\controllers\SiteController::nav();
     $footer = \app\controllers\SiteController::footer();
@@ -48,6 +50,7 @@ class UsuarioController extends Controller
     Response::render($this->viewDir(__NAMESPACE__), 'formulario', [
         'title' => 'Modificar Usuario',
         'head' => $head,
+        'ruta'=>self::$ruta,
         'nav' => $nav,
         'footer' => $footer,
         'usuario' => $usuario
@@ -73,7 +76,7 @@ class UsuarioController extends Controller
 	}
     public function actionListado()
 {
-   
+   static::path();
     $head = \app\controllers\SiteController::head();
     $nav = \app\controllers\SiteController::nav();  // <-- Línea nueva
     $footer = \app\controllers\SiteController::footer();
@@ -83,6 +86,7 @@ class UsuarioController extends Controller
     Response::render($this->viewDir(__NAMESPACE__), "listado", [
     "title" => "Listado de Usuarios",
     "head" => $head,
+    'ruta'=>self::$ruta,
     "nav" => $nav,  // <-- Línea nueva
     "footer" => $footer,
     "usuarios" => $usuarios

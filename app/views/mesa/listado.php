@@ -51,7 +51,7 @@
             </div>
 
             <div class="mesa-footer">
-                <a href="/admin/gestion">Volver al Panel</a>
+                <a href="<?=$ruta?>admin/gestion">Volver al Panel</a>
             </div>
         </div>
     </main>

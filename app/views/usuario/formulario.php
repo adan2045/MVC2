@@ -65,7 +65,7 @@
             </form>
 
             <div class="registro-footer">
-                <a href="/usuario/listado">Volver al Listado</a>
+                <a href="<?=$ruta?>usuario/listado">Volver al Listado</a>
             </div>
         </div>
     </main>

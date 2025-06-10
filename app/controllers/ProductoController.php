@@ -10,6 +10,7 @@ class ProductoController extends Controller
 {
     public function actionListado()
     {
+        $path = static::path();
         $head = \app\controllers\SiteController::head();
         $nav = \app\controllers\SiteController::nav();
         $footer = \app\controllers\SiteController::footer();
@@ -20,6 +21,7 @@ class ProductoController extends Controller
         Response::render($this->viewDir(__NAMESPACE__), 'listado', [
             'title' => 'Listado de Productos',
             'head' => $head,
+            'ruta'=>self::$ruta,
             'nav' => $nav,
             'footer' => $footer,
             'productos' => $productos
@@ -28,6 +30,7 @@ class ProductoController extends Controller
 
     public function actionFormulario()
     {
+        $path = static::path();
         $head = \app\controllers\SiteController::head();
         $nav = \app\controllers\SiteController::nav();
         $footer = \app\controllers\SiteController::footer();
@@ -35,6 +38,7 @@ class ProductoController extends Controller
         Response::render($this->viewDir(__NAMESPACE__), 'formulario', [
             'title' => 'Formulario Producto',
             'head' => $head,
+            'ruta'=>self::$ruta,
             'nav' => $nav,
             'footer' => $footer
         ]);
@@ -42,6 +46,7 @@ class ProductoController extends Controller
 
     public function actionGuardar()
     {
+        $path = static::path();
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $nombre = $_POST["nombre"] ?? '';
             $descripcion = $_POST["descripcion"] ?? '';
@@ -61,6 +66,7 @@ class ProductoController extends Controller
 
     public function actionModificar()
     {
+        $path = static::path();
         $id = $_GET['id'] ?? null;
         if (!$id) {
             echo "ID inválido.";
@@ -82,6 +88,7 @@ class ProductoController extends Controller
         Response::render($this->viewDir(__NAMESPACE__), 'formulario', [
             'title' => 'Editar Producto',
             'head' => $head,
+            'ruta'=>self::$ruta,
             'nav' => $nav,
             'footer' => $footer,
             'producto' => $producto
@@ -90,6 +97,7 @@ class ProductoController extends Controller
 
     public function actionActualizar()
     {
+        $path = static::path();
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $id = $_POST["id"] ?? null;
             $nombre = $_POST["nombre"] ?? '';
@@ -110,6 +118,7 @@ class ProductoController extends Controller
 
     public function actionEliminar()
     {
+        
         $id = $_GET['id'] ?? null;
 
         if ($id) {

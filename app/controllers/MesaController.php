@@ -43,6 +43,7 @@ class MesaController extends Controller
     Response::render($this->viewDir(__NAMESPACE__), 'formulario', [
         'title' => 'Nueva Mesa',
         'head' => $head,
+        'ruta'=> self::$ruta, 
         'nav' => $nav, // <- ESTA TAMBIÉN
         'footer' => $footer
     ]);
@@ -89,6 +90,7 @@ class MesaController extends Controller
         Response::render($this->viewDir(__NAMESPACE__), 'formulario', [
             'title' => 'Editar Mesa',
             'head' => $head,
+            'ruta'=> self::$ruta, 
             'footer' => $footer,
             'mesa' => $mesa
         ]);

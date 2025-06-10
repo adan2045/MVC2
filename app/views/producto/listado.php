@@ -15,7 +15,7 @@
             </div>
 
             <div class="listado-top-actions">
-                <a href="/producto/formulario" class="listado-btn producto-btn-nuevo">➕ Agregar Producto</a>
+                <a href="<?=$ruta?>producto/formulario" class="listado-btn producto-btn-nuevo">➕ Agregar Producto</a>
             </div>
 
             <div class="listado-tabla-wrapper">
@@ -51,7 +51,7 @@
             </div>
 
             <div class="listado-footer">
-                <a href="/admin/gestion">Volver al Panel</a>
+                <a href="<?=$ruta?>admin/gestion">Volver al Panel</a>
             </div>
         </div>
     </main>

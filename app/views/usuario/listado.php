@@ -15,7 +15,7 @@
             </div>
 
             <div class="listado-top-actions">
-                <a href="http://localhost/MVC2/public/usuario/formulario" class="listado-btn listado-btn-nuevo">➕ Nuevo Usuario</a>
+                <a href="<?=$ruta?>usuario/formulario" class="listado-btn listado-btn-nuevo">➕ Nuevo Usuario</a>
             </div>
 
             <div class="listado-tabla-wrapper">
@@ -53,7 +53,7 @@
             </div>
 
             <div class="listado-footer">
-                <a href="/admin/gestion">Volver al Panel</a>
+                <a href="<?=$ruta?>admin/gestion">Volver al Panel</a>
             </div>
         </div>
     </main>
