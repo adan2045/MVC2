@@ -14,7 +14,7 @@
                 <div class="local-icon">
                     <i class="fas fa-store"></i>
                 </div>
-                <h3>Pizzeria Santa Maria</h3>
+                <a href="<?=$ruta?>cajero/vistaCajero" class="action-btn">Pizzeria Santa Maria</a>
             </div>
             <div class="buttons-column">
              <a href="<?=$ruta?>mesa/listado" class="action-btn">Mesas</a>

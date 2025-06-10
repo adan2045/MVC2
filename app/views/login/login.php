@@ -49,7 +49,7 @@
         
         <div class="login-footer">
             <p><a href="#">¿Olvidaste tu contraseña?</a></p>
-            <p>¿No tienes una cuenta? <a href="http://localhost/MVC2/public/registro/registro">Regístrate</a></p>
+            <p>¿No tienes una cuenta? <a href="<?=$ruta?>registro/registro">Regístrate</a></p>
         </div>
     </div>
 

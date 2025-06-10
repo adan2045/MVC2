@@ -11,6 +11,7 @@ class LoginController extends Controller
 
     public function actionLogin()
     {
+        $path = static::path();
         $mail = '';
         $password = '';
         $error_mail = '';
@@ -98,6 +99,7 @@ class LoginController extends Controller
         Response::render($this->viewDir(__NAMESPACE__), "login", [
             "title" => $this->title . "Login",
             "head" => $head,
+            'ruta'=>self::$ruta,
             "nav" => $nav,
             "footer" => $footer,
             "mail" => $mail,

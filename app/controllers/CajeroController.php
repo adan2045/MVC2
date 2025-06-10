@@ -16,7 +16,7 @@ Class CajeroController extends Controller {
 
 	}
 
-    public function actionInicio()
+    public function actionIndex($var=null)
 	{	
 		$footer = SiteController::footer();
 		$head = SiteController::head();
@@ -31,24 +31,28 @@ Class CajeroController extends Controller {
 	}
     public function actionVistaCajero()
     {	
+        $path = static::path();
 		$footer = SiteController::footer();
 		$head = SiteController::head();
 		$nav = SiteController::nav();
 		Response::render($this->viewDir(__NAMESPACE__), "vistaCajero", [
 			"title" => $this->title . "Mesas",
+            'ruta'=>self::$ruta,
 			"head" => $head,
 			"nav" => $nav,
 			"footer" => $footer,
 		]);
 	}
      public function actionCuenta()
-{
+{   
+        $path = static::path();
         $footer = SiteController::footer();
 		$head = SiteController::head();
 		$nav = SiteController::nav();
     // Datos para la vista
     $data = [
         "title" => "Cuenta Cerrada",
+        'ruta'=>self::$ruta,
         "head" => $head,
 		"nav" => $nav,
 		"footer" => $footer,

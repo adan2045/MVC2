@@ -12,7 +12,7 @@ class HomeController extends Controller
 	{
 
 	}
-	public function actionInicio()
+	public function actionIndex($var=null)
 	{	
 		$footer = SiteController::footer();
 		$head = SiteController::head();
@@ -20,6 +20,7 @@ class HomeController extends Controller
 		$path = static::path();
 		Response::render($this->viewDir(__NAMESPACE__), "inicio", [
 			"title" => $this->title . "Inicio",
+			'ruta'=>self::$ruta,
 			"head" => $head,
 			"nav" => $nav,
 			"footer" => $footer,
@@ -37,6 +38,7 @@ class HomeController extends Controller
 			"title" => $this->title . "Crear usuario",
 			"head" => $head,
 			"nav" => $nav,
+			'ruta'=>self::$ruta,
 		]);
 	}
 

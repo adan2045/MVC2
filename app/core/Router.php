@@ -25,7 +25,7 @@ $this->add('mesa/eliminar', 'mesa', 'eliminar');
     // NUEVAS RUTAS: CRUD Usuarios
     $this->add('usuario/formulario', 'usuario', 'formulario');
     $this->add('usuario/guardar', 'usuario', 'guardar');
-    $this->add('usuario/listado', 'usuario', 'listado'); // <-- AGREGÁ ESTA
+    $this->add('usuario/listado', 'usuario', 'listado'); 
     $this->add('usuario/modificar', 'usuario', 'modificar');
     $this->add('usuario/eliminar', 'usuario', 'eliminar');
     $this->add('usuario/actualizar', 'usuario', 'actualizar');
