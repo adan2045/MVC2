@@ -10,7 +10,7 @@
     <main>
         <div class="registro-container">
             <div class="registro-header">
-                <h1><?= isset($usuario) ? 'Editar Usuario' : 'Nuevo Usuario' ?></h1>
+                <h1><?= isset($usuario) ? 'Modificación de Usuario' : 'Nuevo Usuario' ?></h1>
             </div>
 
             <form action="<?= isset($usuario) ? $ruta . '/usuario/actualizar' : $ruta . '/usuario/guardar' ?>" method="POST" class="registro-form">
@@ -65,7 +65,7 @@
             </form>
 
             <div class="registro-footer">
-                <a href="<?=$ruta?>usuario/listado">Volver al Listado</a>
+                <a href="<?= $ruta ?>/usuario/listado">Volver al Listado</a>
             </div>
         </div>
     </main>

@@ -15,7 +15,7 @@
             </div>
 
             <div class="listado-top-actions">
-                <a href="<?=$ruta?>usuario/formulario" class="listado-btn listado-btn-nuevo">➕ Nuevo Usuario</a>
+                <a href="<?= $ruta ?>/usuario/formulario" class="listado-btn listado-btn-nuevo">➕ Nuevo Usuario</a>
             </div>
 
             <div class="listado-tabla-wrapper">
@@ -42,8 +42,8 @@
                                 <td><?= $usuario['rol'] ?></td>
                                 <td>
                                     <div class="listado-acciones">
-                                        <a href="/usuario/modificar?id=<?= $usuario['id'] ?>" class="listado-btn-mini">Modificar</a>
-                                        <a href="/usuario/eliminar?id=<?= $usuario['id'] ?>" class="listado-btn-mini listado-btn-eliminar" onclick="return confirm('¿Eliminar este usuario?');">Eliminar</a>
+                                        <a href="<?= $ruta ?>/usuario/modificar?id=<?= $usuario['id'] ?>" class="listado-btn-mini">Modificar</a>
+                                        <a href="<?= $ruta ?>/usuario/eliminar?id=<?= $usuario['id'] ?>" class="listado-btn-mini listado-btn-eliminar" onclick="return confirm('¿Eliminar este usuario?');">Eliminar</a>
                                     </div>
                                 </td>
                             </tr>
@@ -53,7 +53,7 @@
             </div>
 
             <div class="listado-footer">
-                <a href="<?=$ruta?>admin/gestion">Volver al Panel</a>
+                <a href="<?= $ruta ?>/admin/gestion">Volver al Panel</a>
             </div>
         </div>
     </main>

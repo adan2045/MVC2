@@ -25,38 +25,40 @@ class UsuarioController extends Controller
         ]);
     }
 
-    public function actionModificar()
-    {
-        $id = $_GET['id'] ?? null;
+   public function actionModificar()
+{
+    $id = $_GET['id'] ?? null;
 
-        if (!$id) {
-            echo "ID inválido";
-            return;
-        }
-
-        $usuarioModel = new UsuarioModel();
-        $usuario = $usuarioModel->obtenerPorId($id);
-
-        if (!$usuario) {
-            echo "Usuario no encontrado";
-            return;
-        }
-
-        static::path();
-        $head = \app\controllers\SiteController::head();
-        $nav = \app\controllers\SiteController::nav();
-        $footer = \app\controllers\SiteController::footer();
-
-        Response::render($this->viewDir(__NAMESPACE__), 'formulario', [
-            'title' => 'Modificar Usuario',
-            'head' => $head,
-            'ruta' => App::baseUrl(),
-            'nav' => $nav,
-            'footer' => $footer,
-            'usuario' => $usuario
-        ]);
+    if (!$id || !is_numeric($id)) {
+        echo "<p style='color: red;'>ID inválido o no recibido.</p>";
+        exit;
     }
 
+    $usuarioModel = new UsuarioModel();
+    $usuario = $usuarioModel->obtenerPorId($id);
+
+    if (!$usuario) {
+        echo "<p style='color: red;'>Usuario con ID $id no encontrado.</p>";
+        exit;
+    }
+
+    // ✅ Convertir objeto a array para que funcione en la vista
+    $usuario = (array) $usuario;
+
+    static::path();
+    $head = \app\controllers\SiteController::head();
+    $nav = \app\controllers\SiteController::nav();
+    $footer = \app\controllers\SiteController::footer();
+
+    Response::render($this->viewDir(__NAMESPACE__), 'modificar', [
+        'title' => 'Modificar Usuario',
+        'head' => $head,
+        'ruta' => App::baseUrl(),
+        'nav' => $nav,
+        'footer' => $footer,
+        'usuario' => $usuario
+    ]);
+}
     public function actionListado()
     {
         static::path();
