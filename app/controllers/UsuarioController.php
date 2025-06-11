@@ -25,40 +25,40 @@ class UsuarioController extends Controller
         ]);
     }
 
-   public function actionModificar()
-{
-    $id = $_GET['id'] ?? null;
+    public function actionModificar()
+    {
+        $id = $_GET['id'] ?? null;
 
-    if (!$id || !is_numeric($id)) {
-        echo "<p style='color: red;'>ID inválido o no recibido.</p>";
-        exit;
+        if (!$id || !is_numeric($id)) {
+            echo "<p style='color: red;'>ID inválido o no recibido.</p>";
+            exit;
+        }
+
+        $usuarioModel = new UsuarioModel();
+        $usuario = $usuarioModel->obtenerPorId($id);
+
+        if (!$usuario) {
+            echo "<p style='color: red;'>Usuario con ID $id no encontrado.</p>";
+            exit;
+        }
+
+        $usuario = (array) $usuario;
+
+        static::path();
+        $head = \app\controllers\SiteController::head();
+        $nav = \app\controllers\SiteController::nav();
+        $footer = \app\controllers\SiteController::footer();
+
+        Response::render($this->viewDir(__NAMESPACE__), 'modificar', [
+            'title' => 'Modificar Usuario',
+            'head' => $head,
+            'ruta' => App::baseUrl(),
+            'nav' => $nav,
+            'footer' => $footer,
+            'usuario' => $usuario
+        ]);
     }
 
-    $usuarioModel = new UsuarioModel();
-    $usuario = $usuarioModel->obtenerPorId($id);
-
-    if (!$usuario) {
-        echo "<p style='color: red;'>Usuario con ID $id no encontrado.</p>";
-        exit;
-    }
-
-    // ✅ Convertir objeto a array para que funcione en la vista
-    $usuario = (array) $usuario;
-
-    static::path();
-    $head = \app\controllers\SiteController::head();
-    $nav = \app\controllers\SiteController::nav();
-    $footer = \app\controllers\SiteController::footer();
-
-    Response::render($this->viewDir(__NAMESPACE__), 'modificar', [
-        'title' => 'Modificar Usuario',
-        'head' => $head,
-        'ruta' => App::baseUrl(),
-        'nav' => $nav,
-        'footer' => $footer,
-        'usuario' => $usuario
-    ]);
-}
     public function actionListado()
     {
         static::path();
@@ -131,14 +131,26 @@ class UsuarioController extends Controller
 
             $usuarioModel = new UsuarioModel();
 
-            if ($id) {
-                $usuarioModel->actualizar($id, $nombre, $apellido, $email, $password, $dni, $rol);
-
-                echo "<p style='color: green; font-weight: bold;'>✅ Usuario actualizado correctamente.</p>";
-                echo "<script>setTimeout(() => window.location.href = '" . App::baseUrl() . "/usuario/listado', 1500);</script>";
-                exit;
-            } else {
-                echo "<p style='color: red;'>ID inválido para actualización.</p>";
+            try {
+                if ($id) {
+                    $usuarioModel->actualizar($id, $nombre, $apellido, $email, $password, $dni, $rol);
+                    echo "
+                    <div style='background: #d4edda; color: #155724; padding: 1rem; margin: 2rem auto; max-width: 500px; font-family: sans-serif; border: 1px solid #c3e6cb; border-radius: 4px; text-align: center;'>
+                        ✅ Usuario actualizado correctamente.<br>
+                        Redirigiendo al listado de usuarios...
+                    </div>
+                    <script>
+                      setTimeout(function() {
+                        window.location.href = '" . App::baseUrl() . "/usuario/listado';
+                      }, 2000);
+                    </script>
+                    ";
+                    exit;
+                } else {
+                    echo "<p style='color: red;'>ID inválido para actualización.</p>";
+                }
+            } catch (\Throwable $e) {
+                echo "<p style='color: red;'>Error al actualizar: " . $e->getMessage() . "</p>";
             }
         } else {
             echo "<p style='color: red;'>Solicitud no válida.</p>";

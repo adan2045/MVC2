@@ -136,23 +136,23 @@
         <h1>Modificación de Usuario</h1>
       </div>
 
-      <form action="#" method="POST" class="registro-form">
-        <input type="hidden" name="id" value="13">
+      <form action="<?= $ruta ?>/usuario/actualizar" method="POST" class="registro-form">
+        <input type="hidden" name="id" value="<?= $usuario['id'] ?>">
 
         <div class="form-grid">
           <div class="form-group">
             <label class="form-label">Nombre</label>
-            <input type="text" name="nombre" class="form-control" required value="cvcxvcxvx">
+            <input type="text" name="nombre" class="form-control" required value="<?= $usuario['nombre'] ?>">
           </div>
 
           <div class="form-group">
             <label class="form-label">Apellido</label>
-            <input type="text" name="apellido" class="form-control" required value="trterter">
+            <input type="text" name="apellido" class="form-control" required value="<?= $usuario['apellido'] ?>">
           </div>
 
           <div class="form-group">
             <label class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" required value="kregbgcbcvros@gmail.com">
+            <input type="email" name="email" class="form-control" required value="<?= $usuario['email'] ?>">
           </div>
 
           <div class="form-group">
@@ -162,14 +162,14 @@
 
           <div class="form-group">
             <label class="form-label">DNI</label>
-            <input type="text" name="dni" class="form-control" required value="147147">
+            <input type="text" name="dni" class="form-control" required value="<?= $usuario['dni'] ?>">
           </div>
 
           <div class="form-group">
             <label class="form-label">Rol</label>
             <select name="rol" class="form-control">
-              <option value="mozo" selected>Mozo</option>
-              <option value="admin">Admin</option>
+              <option value="mozo" <?= $usuario['rol'] === 'mozo' ? 'selected' : '' ?>>Mozo</option>
+              <option value="admin" <?= $usuario['rol'] === 'admin' ? 'selected' : '' ?>>Admin</option>
             </select>
           </div>
         </div>
@@ -178,7 +178,7 @@
       </form>
 
       <div class="registro-footer">
-        <a href="#">Volver al Listado</a>
+        <a href="<?= $ruta ?>/usuario/listado">Volver al Listado</a>
       </div>
     </div>
   </main>
