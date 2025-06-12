@@ -30,62 +30,43 @@
             </div>
 
             <div class="menu-menu-list">
-                <div class="menu-category-title">Entradas</div>
-                <div class="menu-menu-item">
-                    <div class="menu-item-info">
-                        <div class="menu-item-name">Ensalada César</div>
-                        <div class="menu-item-description">Lechuga romana, crutones, parmesano y aderezo césar</div>
-                    </div>
-                    <div class="menu-item-price">$850</div>
-                    <div class="menu-quantity-control">
-                        <button class="menu-quantity-btn">-</button>
-                        <span class="menu-quantity-display">0</span>
-                        <button class="menu-quantity-btn">+</button>
-                    </div>
-                </div>
+    <div class="menu-category-title">Pizzas</div>
 
-                <div class="menu-category-title">Platos Principales</div>
-                <div class="menu-menu-item">
-                    <div class="menu-item-info">
-                        <div class="menu-item-name">Lomo a la Pimienta</div>
-                        <div class="menu-item-description">Con puré de papas y vegetales salteados</div>
-                    </div>
-                    <div class="menu-item-price">$2,450</div>
-                    <div class="menu-quantity-control">
-                        <button class="menu-quantity-btn">-</button>
-                        <span class="menu-quantity-display">0</span>
-                        <button class="menu-quantity-btn">+</button>
-                    </div>
-                </div>
-
-                <div class="menu-menu-item">
-                    <div class="menu-item-info">
-                        <div class="menu-item-name">Salmón Grillado</div>
-                        <div class="menu-item-description">Con risotto de limón y espárragos</div>
-                    </div>
-                    <div class="menu-item-price">$2,850</div>
-                    <div class="menu-quantity-control">
-                        <button class="menu-quantity-btn">-</button>
-                        <span class="menu-quantity-display">0</span>
-                        <button class="menu-quantity-btn">+</button>
-                    </div>
-                </div>
-
-                <div class="menu-category-title">Bebidas</div>
-                <div class="menu-menu-item">
-                    <div class="menu-item-info">
-                        <div class="menu-item-name">Agua Mineral</div>
-                        <div class="menu-item-description">Con/Sin gas 500ml</div>
-                    </div>
-                    <div class="menu-item-price">$350</div>
-                    <div class="menu-quantity-control">
-                        <button class="menu-quantity-btn">-</button>
-                        <span class="menu-quantity-display">0</span>
-                        <button class="menu-quantity-btn">+</button>
-                    </div>
-                </div>
+    <?php foreach ($pizzas as $pizza): ?>
+        <div class="menu-menu-item">
+            <div class="menu-item-info">
+                <div class="menu-item-name"><?= htmlspecialchars($pizza['nombre']) ?></div>
+                <div class="menu-item-description"><?= htmlspecialchars($pizza['descripcion']) ?></div>
             </div>
+            <div class="menu-item-price">$<?= number_format($pizza['precio'], 0, ',', '.') ?></div>
+            <div class="menu-quantity-control">
+                <button class="menu-quantity-btn">-</button>
+                <span class="menu-quantity-display">0</span>
+                <button class="menu-quantity-btn">+</button>
+            </div>
+        </div>
+    <?php endforeach; ?>
+</div>
+<div class="menu-category-title">Bebidas</div>
 
+<?php if (!empty($bebidas)): ?>
+    <?php foreach ($bebidas as $bebida): ?>
+        <div class="menu-menu-item">
+            <div class="menu-item-info">
+                <div class="menu-item-name"><?= htmlspecialchars($bebida['nombre']) ?></div>
+                <div class="menu-item-description"><?= htmlspecialchars($bebida['descripcion']) ?></div>
+            </div>
+            <div class="menu-item-price">$<?= number_format($bebida['precio'], 0, ',', '.') ?></div>
+            <div class="menu-quantity-control">
+                <button class="menu-quantity-btn">-</button>
+                <span class="menu-quantity-display">0</span>
+                <button class="menu-quantity-btn">+</button>
+            </div>
+        </div>
+            <?php endforeach; ?>
+            <?php else: ?>
+            <p style="color:red;">No hay bebidas disponibles.</p>
+            <?php endif; ?>
             <div class="menu-mesa-footer">
                 <div class="menu-total-amount">Total: $0</div>
                 <button class="menu-order-btn">Enviar Pedido</button>
@@ -114,8 +95,8 @@
             const plusBtn = control.querySelector('.menu-quantity-btn:last-child');
             const display = control.querySelector('.menu-quantity-display');
             const priceText = control.parentElement.querySelector('.menu-item-price').textContent;
-            const price = parseInt(priceText.replace('$', '').replace(',', ''));
-
+            const cleanPrice = priceText.replace('$', '').replace(/\./g, '').replace(',', '.');
+            const price = parseFloat(cleanPrice);
             plusBtn.addEventListener('click', () => {
                 let quantity = parseInt(display.textContent);
                 display.textContent = quantity + 1;
@@ -134,8 +115,9 @@
         });
 
         function updateTotal() {
-            totalDisplay.textContent = `Total: $${total.toLocaleString()}`;
-        }
+    totalDisplay.textContent = `Total: $${total.toLocaleString('es-AR')}`;
+}
+
 
         // Botón de enviar pedido
         document.querySelector('.menu-order-btn').addEventListener('click', () => {

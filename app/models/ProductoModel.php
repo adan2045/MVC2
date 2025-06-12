@@ -18,6 +18,21 @@ class ProductoModel
     $stmt = $this->db->prepare("SELECT * FROM productos");
     $stmt->execute();
     return $stmt->fetchAll();
+    
+}
+
+    public function obtenerComidaActiva()
+{
+    $stmt = $this->db->prepare("SELECT nombre, descripcion, precio FROM productos WHERE categoria = 'comida' AND activo = 1 ORDER BY nombre");
+    $stmt->execute();
+    return $stmt->fetchAll();
+}
+
+    public function obtenerBebidasActivas()
+{
+    $stmt = $this->db->prepare("SELECT nombre, descripcion, precio FROM productos WHERE categoria = 'bebida' AND activo = 1 ORDER BY nombre");
+    $stmt->execute();
+    return $stmt->fetchAll();
 }
 
     public function obtenerPorId($id)

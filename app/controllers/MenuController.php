@@ -25,15 +25,23 @@ class MenuController extends Controller{
 		]);
 	}
 	public function actionMenu()
-	{	
-		$footer = SiteController::footer();
-		$head = SiteController::head();
-		$nav = SiteController::nav();
-		Response::render($this->viewDir(__NAMESPACE__), "menu", [
-			"title" => $this->title . "menu",
-			"head" => $head,
-			"nav" => $nav,
-			"footer" => $footer,
-		]);
-	}
+{
+    $productoModel = new \app\models\ProductoModel();
+
+    $pizzas = $productoModel->obtenerComidaActiva();   // 'comida' -> se muestra como Pizzas
+    $bebidas = $productoModel->obtenerBebidasActivas(); // 'bebida' -> se muestra como Bebidas
+
+    $head = \app\controllers\SiteController::head();
+    $nav = \app\controllers\SiteController::nav();
+    $footer = \app\controllers\SiteController::footer();
+
+    \Response::render('menu/', 'menu', [
+        'title' => 'Carta Digital',
+        'head' => $head,
+        'nav' => $nav,
+        'footer' => $footer,
+        'pizzas' => $pizzas,
+        'bebidas' => $bebidas
+    ]);
+}
 }
