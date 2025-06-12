@@ -3,14 +3,14 @@ namespace app\controllers;
 
 use \Controller;
 use \Response;
+use \App;
 use app\models\ProductoModel;
-use app\controllers\SesionController;
 
 class ProductoController extends Controller
 {
     public function actionListado()
     {
-        $path = static::path();
+        static::path();
         $head = \app\controllers\SiteController::head();
         $nav = \app\controllers\SiteController::nav();
         $footer = \app\controllers\SiteController::footer();
@@ -21,7 +21,7 @@ class ProductoController extends Controller
         Response::render($this->viewDir(__NAMESPACE__), 'listado', [
             'title' => 'Listado de Productos',
             'head' => $head,
-            'ruta'=>self::$ruta,
+            'ruta' => App::baseUrl(),
             'nav' => $nav,
             'footer' => $footer,
             'productos' => $productos
@@ -30,7 +30,7 @@ class ProductoController extends Controller
 
     public function actionFormulario()
     {
-        $path = static::path();
+        static::path();
         $head = \app\controllers\SiteController::head();
         $nav = \app\controllers\SiteController::nav();
         $footer = \app\controllers\SiteController::footer();
@@ -38,7 +38,7 @@ class ProductoController extends Controller
         Response::render($this->viewDir(__NAMESPACE__), 'formulario', [
             'title' => 'Formulario Producto',
             'head' => $head,
-            'ruta'=>self::$ruta,
+            'ruta' => App::baseUrl(),
             'nav' => $nav,
             'footer' => $footer
         ]);
@@ -46,7 +46,7 @@ class ProductoController extends Controller
 
     public function actionGuardar()
     {
-        $path = static::path();
+        static::path();
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $nombre = $_POST["nombre"] ?? '';
             $descripcion = $_POST["descripcion"] ?? '';
@@ -56,20 +56,22 @@ class ProductoController extends Controller
             if ($nombre && $descripcion && $precio && $categoria) {
                 $model = new ProductoModel();
                 $model->guardar($nombre, $descripcion, $precio, $categoria);
-                header("Location: /producto/listado");
+
+                echo "<p style='color: green; font-weight: bold;'>✅ Producto guardado correctamente.</p>";
+                echo "<script>setTimeout(() => window.location.href = '" . App::baseUrl() . "/producto/listado', 1500);</script>";
                 exit;
             } else {
-                echo "Faltan campos obligatorios.";
+                echo "<p style='color: red;'>Faltan campos obligatorios.</p>";
             }
         }
     }
 
     public function actionModificar()
     {
-        $path = static::path();
+        static::path();
         $id = $_GET['id'] ?? null;
-        if (!$id) {
-            echo "ID inválido.";
+        if (!$id || !is_numeric($id)) {
+            echo "<p style='color:red;'>ID inválido.</p>";
             return;
         }
 
@@ -77,18 +79,20 @@ class ProductoController extends Controller
         $producto = $model->obtenerPorId($id);
 
         if (!$producto) {
-            echo "Producto no encontrado.";
+            echo "<p style='color:red;'>Producto no encontrado.</p>";
             return;
         }
+
+        $producto = (array) $producto;
 
         $head = \app\controllers\SiteController::head();
         $nav = \app\controllers\SiteController::nav();
         $footer = \app\controllers\SiteController::footer();
 
-        Response::render($this->viewDir(__NAMESPACE__), 'formulario', [
+        Response::render($this->viewDir(__NAMESPACE__), 'modificar', [
             'title' => 'Editar Producto',
             'head' => $head,
-            'ruta'=>self::$ruta,
+            'ruta' => App::baseUrl(),
             'nav' => $nav,
             'footer' => $footer,
             'producto' => $producto
@@ -97,7 +101,7 @@ class ProductoController extends Controller
 
     public function actionActualizar()
     {
-        $path = static::path();
+        static::path();
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $id = $_POST["id"] ?? null;
             $nombre = $_POST["nombre"] ?? '';
@@ -108,17 +112,19 @@ class ProductoController extends Controller
             if ($id && $nombre && $descripcion && $precio && $categoria) {
                 $model = new ProductoModel();
                 $model->actualizar($id, $nombre, $descripcion, $precio, $categoria);
-                header("Location: /producto/listado");
+
+                echo "<p style='color: green; font-weight: bold;'>✅ Producto actualizado correctamente.</p>";
+                echo "<script>setTimeout(() => window.location.href = '" . App::baseUrl() . "/producto/listado', 1500);</script>";
                 exit;
             } else {
-                echo "Faltan campos obligatorios.";
+                echo "<p style='color: red;'>Faltan campos obligatorios.</p>";
             }
         }
     }
 
     public function actionEliminar()
     {
-        
+        static::path();
         $id = $_GET['id'] ?? null;
 
         if ($id) {
@@ -126,7 +132,7 @@ class ProductoController extends Controller
             $model->eliminar($id);
         }
 
-        header("Location: /producto/listado");
+        header("Location: " . App::baseUrl() . "/producto/listado");
         exit;
     }
 }

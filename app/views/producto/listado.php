@@ -15,7 +15,7 @@
             </div>
 
             <div class="listado-top-actions">
-                <a href="<?=$ruta?>producto/formulario" class="listado-btn producto-btn-nuevo">➕ Agregar Producto</a>
+                <a href="<?= App::baseUrl() ?>/producto/formulario" class="listado-btn producto-btn-nuevo">➕ Agregar Producto</a>
             </div>
 
             <div class="listado-tabla-wrapper">
@@ -40,8 +40,8 @@
                                 <td><?= $producto['categoria'] ?></td>
                                 <td>
                                     <div class="listado-acciones">
-                                        <a href="/producto/modificar?id=<?= $producto['id'] ?>" class="listado-btn-mini">Modificar</a>
-                                        <a href="/producto/eliminar?id=<?= $producto['id'] ?>" class="listado-btn-mini listado-btn-eliminar" onclick="return confirm('¿Eliminar este producto?');">Eliminar</a>
+                                        <a href="<?= App::baseUrl() ?>/producto/modificar?id=<?= $producto['id'] ?>" class="listado-btn-mini">Modificar</a>
+                                        <a href="<?= App::baseUrl() ?>/producto/eliminar?id=<?= $producto['id'] ?>" class="listado-btn-mini listado-btn-eliminar" onclick="return confirm('¿Eliminar este producto?');">Eliminar</a>
                                     </div>
                                 </td>
                             </tr>
@@ -51,7 +51,7 @@
             </div>
 
             <div class="listado-footer">
-                <a href="<?=$ruta?>admin/gestion">Volver al Panel</a>
+                <a href="<?= App::baseUrl() ?>/admin/gestion">Volver al Panel</a>
             </div>
         </div>
     </main>
