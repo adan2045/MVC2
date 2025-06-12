@@ -3,6 +3,8 @@
 <head>
     <?= $head ?>
     <title><?= $title ?? 'Listado de Productos' ?></title>
+    <link rel="stylesheet" href="/public/css/listado.css">
+    <link rel="stylesheet" href="/public/css/switch.css">
 </head>
 <body>
     <header><?= $nav ?></header>
@@ -27,6 +29,7 @@
                             <th>Descripción</th>
                             <th>Precio</th>
                             <th>Categoría</th>
+                            <th>Activo</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -38,6 +41,12 @@
                                 <td><?= $producto['descripcion'] ?></td>
                                 <td>$<?= number_format($producto['precio'], 2) ?></td>
                                 <td><?= $producto['categoria'] ?></td>
+                                <td>
+                                    <label class="switch">
+                                        <input type="checkbox" class="toggle-estado" data-id="<?= $producto['id'] ?>" <?= $producto['activo'] ? 'checked' : '' ?>>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </td>
                                 <td>
                                     <div class="listado-acciones">
                                         <a href="<?= App::baseUrl() ?>/producto/modificar?id=<?= $producto['id'] ?>" class="listado-btn-mini">Modificar</a>
@@ -57,5 +66,30 @@
     </main>
 
     <?= $footer ?>
+
+    <script>
+    document.querySelectorAll('.toggle-estado').forEach(switchElem => {
+        switchElem.addEventListener('change', function() {
+            const productoId = this.dataset.id;
+            const nuevoEstado = this.checked ? 1 : 0;
+
+            fetch('<?= App::baseUrl() ?>/producto/toggleEstado', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id=${productoId}&activo=${nuevoEstado}`
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log('Estado actualizado:', data);
+            })
+            .catch(error => {
+                alert('Error al cambiar el estado');
+                this.checked = !this.checked;
+            });
+        });
+    });
+    </script>
 </body>
 </html>

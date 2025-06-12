@@ -39,6 +39,14 @@ class ProductoModel
         return $stmt->execute([$nombre, $descripcion, $precio, $categoria, $id]);
     }
 
+    public function actualizarEstado($id, $activo)
+{
+    $stmt = $this->db->prepare("UPDATE productos SET activo = :activo WHERE id = :id");
+    $stmt->bindParam(':activo', $activo, \PDO::PARAM_INT);
+    $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+    $stmt->execute();
+}
+
     public function eliminar($id)
     {
         $stmt = $this->db->prepare("DELETE FROM productos WHERE id = ?");

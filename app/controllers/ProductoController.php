@@ -45,6 +45,23 @@ class ProductoController extends Controller
         ]);
     }
 
+    public function actionToggleEstado()
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $id = $_POST['id'] ?? null;
+        $activo = $_POST['activo'] ?? null;
+
+        if ($id !== null && $activo !== null) {
+            $productoModel = new ProductoModel();
+            $productoModel->actualizarEstado($id, $activo);
+            echo "ok";
+        } else {
+            http_response_code(400);
+            echo "Datos incompletos";
+        }
+    }
+}
+
     public function actionGuardar()
     {
         static::path();
