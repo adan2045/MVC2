@@ -73,6 +73,21 @@ class PedidoController extends Controller
     }
 }
 
+public function actionActualizarEstadoProducto()
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $detalleId = $_POST['id'] ?? null;
+        $estado = $_POST['estado'] ?? null;
 
+        if ($detalleId && in_array($estado, ['pendiente', 'en_proceso', 'completado'])) {
+            $model = new \app\models\PedidoModel();
+            $exito = $model->actualizarEstadoProducto($detalleId, $estado);
+            echo $exito ? 'ok' : 'error';
+        } else {
+            http_response_code(400);
+            echo 'Datos inválidos';
+        }
+    }
+}
 
 }

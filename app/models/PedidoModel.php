@@ -36,7 +36,7 @@ class PedidoModel
             return false;
         }
     }
-    public function obtenerPedidosDelDiaConDetalle()
+   public function obtenerPedidosDelDiaConDetalle()
 {
     $sql = "
         SELECT
@@ -44,9 +44,10 @@ class PedidoModel
             m.numero AS mesa_numero,
             u.nombre AS mozo_nombre,
             u.apellido AS mozo_apellido,
+            pd.id AS detalle_id,
+            pd.estado AS detalle_estado,
             pd.cantidad,
             pr.nombre AS producto_nombre,
-            p.estado,
             DATE_FORMAT(p.fecha, '%H:%i') AS hora
         FROM pedidos p
         JOIN mesas m ON p.mesa_id = m.id
@@ -54,7 +55,7 @@ class PedidoModel
         JOIN pedido_detalle pd ON pd.pedido_id = p.id
         JOIN productos pr ON pr.id = pd.producto_id
         WHERE DATE(p.fecha) = CURDATE()
-        ORDER BY p.id DESC
+        ORDER BY p.id DESC, pd.id ASC
     ";
 
     $stmt = $this->db->prepare($sql);
@@ -68,6 +69,15 @@ class PedidoModel
     return $stmt->execute([
         ':estado' => $estado,
         ':id' => $id
+    ]);
+}
+
+public function actualizarEstadoProducto($detalleId, $estado)
+{
+    $stmt = $this->db->prepare("UPDATE pedido_detalle SET estado = :estado WHERE id = :id");
+    return $stmt->execute([
+        ':estado' => $estado,
+        ':id' => $detalleId
     ]);
 }
 }

@@ -89,22 +89,23 @@
 
                             <?php if ($nuevoPedido): ?>
                                 <td><?= $pedido['hora'] ?></td>
-                                <td>
-                                    <div class="listado-acciones">
-                                        <?php foreach (['pendiente', 'en_proceso', 'completado'] as $estado): ?>
-                                            <button
-                                                class="estado-btn <?= $pedido['estado'] === $estado ? 'estado-' . $estado : '' ?>"
-                                                data-id="<?= $pedido['pedido_id'] ?>"
-                                                data-estado="<?= $estado ?>"
-                                            >
-                                                <?= ucfirst(str_replace('_', ' ', $estado)) ?>
-                                            </button>
-                                        <?php endforeach; ?>
-                                    </div>
-                                </td>
                             <?php else: ?>
-                                <td></td><td></td>
+                                <td></td>
                             <?php endif; ?>
+
+                            <td>
+                                <div class="listado-acciones">
+                                    <?php foreach (['pendiente', 'en_proceso', 'completado'] as $estado): ?>
+                                        <button
+                                            class="estado-btn <?= $pedido['detalle_estado'] === $estado ? 'estado-' . $estado : '' ?>"
+                                            data-id="<?= $pedido['detalle_id'] ?>"
+                                            data-estado="<?= $estado ?>"
+                                        >
+                                            <?= ucfirst(str_replace('_', ' ', $estado)) ?>
+                                        </button>
+                                    <?php endforeach; ?>
+                                </div>
+                            </td>
                         </tr>
                     <?php $ultimoPedidoId = $pedido['pedido_id']; endforeach; ?>
                 </tbody>
@@ -114,13 +115,13 @@
         <script>
         document.querySelectorAll('.estado-btn').forEach(btn => {
             btn.addEventListener('click', function () {
-                const pedidoId = this.dataset.id;
+                const detalleId = this.dataset.id;
                 const nuevoEstado = this.dataset.estado;
 
-                fetch('<?= $ruta ?>/pedido/actualizarEstado', {
+                fetch('<?= $ruta ?>/pedido/actualizarEstadoProducto', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: `id=${pedidoId}&estado=${nuevoEstado}`
+                    body: `id=${detalleId}&estado=${nuevoEstado}`
                 })
                 .then(res => res.text())
                 .then(res => {
