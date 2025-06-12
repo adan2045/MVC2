@@ -44,4 +44,28 @@ class MenuController extends Controller{
         'bebidas' => $bebidas
     ]);
 }
+
+	public function actionMozo()
+{
+    $productoModel = new \app\models\ProductoModel();
+    $mesaModel = new \app\models\MesaModel();
+
+    $pizzas = $productoModel->obtenerComidaActiva();
+    $bebidas = $productoModel->obtenerBebidasActivas();
+    $mesas = $mesaModel->obtenerTodas(); // o solo activas, como prefieras
+
+    $head = \app\controllers\SiteController::head();
+    $nav = \app\controllers\SiteController::nav();
+    $footer = \app\controllers\SiteController::footer();
+
+    \Response::render('menu/', 'menu_mozo', [
+        'title' => 'Menú para Mozos',
+        'head' => $head,
+        'nav' => $nav,
+        'footer' => $footer,
+        'pizzas' => $pizzas,
+        'bebidas' => $bebidas,
+        'mesas' => $mesas
+    ]);
+}
 }
