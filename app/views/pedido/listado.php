@@ -46,6 +46,11 @@
         }
     </style>
 </head>
+<script>
+    setInterval(() => {
+        location.reload();
+    }, 5000); // 5000 milisegundos = 5 segundos
+</script>
 <body>
 <header><?= $nav ?></header>
 

@@ -9,30 +9,36 @@ use app\models\PedidoModel;
 class PedidoController extends Controller
 {
     public function actionGuardar()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $json = file_get_contents("php://input");
-            $data = json_decode($json, true);
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $data = json_decode(file_get_contents("php://input"), true);
 
-            $mesaId = $data['mesa_id'] ?? null;
-            $total = $data['total'] ?? 0;
-            $productos = $data['productos'] ?? [];
+        $mesaId = $data['mesa_id'] ?? null;
+        $productos = $data['productos'] ?? [];
 
-            if (!$mesaId || empty($productos)) {
-                http_response_code(400);
-                echo "Datos incompletos";
-                return;
-            }
-
-            // Si hay mozo logueado en sesión, lo usamos. Si no, null.
-            $mozoId = $_SESSION['usuario']['id'] ?? null;
-
-            $model = new PedidoModel();
-            $exito = $model->guardarPedido($mesaId, $mozoId, $total, $productos);
-
-            echo $exito ? "ok" : "error";
+        if (!$mesaId || empty($productos)) {
+            http_response_code(400);
+            echo 'Faltan datos';
+            return;
         }
+
+        $mozoId = $_SESSION['usuario']['id'] ?? null;
+        $total = 0;
+
+        $productoModel = new \app\models\ProductoModel();
+        foreach ($productos as $p) {
+            $producto = $productoModel->obtenerPorId($p['id']);
+            if ($producto) {
+                $total += $producto['precio'] * $p['cantidad'];
+            }
+        }
+
+        $model = new \app\models\PedidoModel();
+        $exito = $model->guardarPedido($mesaId, $mozoId, $total, $productos);
+
+        echo $exito ? 'ok' : 'error';
     }
+}
 
     public function actionListado()
 {

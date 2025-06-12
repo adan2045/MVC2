@@ -13,29 +13,30 @@ class PedidoModel
     }
 
     public function guardarPedido($mesaId, $mozoId, $total, $productos)
-    {
-        try {
-            $this->db->beginTransaction();
+{
+    try {
+        $this->db->beginTransaction();
 
-            // Insertar en pedidos (encabezado)
-            $stmt = $this->db->prepare("INSERT INTO pedidos (mesa_id, mozo_id, total) VALUES (?, ?, ?)");
-            $stmt->execute([$mesaId, $mozoId, $total]);
-            $pedidoId = $this->db->lastInsertId();
+        $stmt = $this->db->prepare("INSERT INTO pedidos (mesa_id, mozo_id, total) VALUES (?, ?, ?)");
+        $stmt->execute([$mesaId, $mozoId, $total]);
+        $pedidoId = $this->db->lastInsertId();
 
-            // Insertar en pedido_detalle
-            $stmtDetalle = $this->db->prepare("INSERT INTO pedido_detalle (pedido_id, producto_id, cantidad) VALUES (?, ?, ?)");
+        $stmtDetalle = $this->db->prepare(
+            "INSERT INTO pedido_detalle (pedido_id, producto_id, cantidad, estado)
+             VALUES (?, ?, ?, 'pendiente')"
+        );
 
-            foreach ($productos as $prod) {
-                $stmtDetalle->execute([$pedidoId, $prod['id'], $prod['cantidad']]);
-            }
-
-            $this->db->commit();
-            return true;
-        } catch (\Exception $e) {
-            $this->db->rollBack();
-            return false;
+        foreach ($productos as $p) {
+            $stmtDetalle->execute([$pedidoId, $p['id'], $p['cantidad']]);
         }
+
+        $this->db->commit();
+        return true;
+    } catch (\Exception $e) {
+        $this->db->rollBack();
+        return false;
     }
+}
    public function obtenerPedidosDelDiaConDetalle()
 {
     $sql = "

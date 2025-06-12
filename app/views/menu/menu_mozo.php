@@ -4,7 +4,6 @@
     <?= $head ?>
     <title><?= $title ?? 'Menú Mozo' ?></title>
     <link rel="stylesheet" href="/public/css/listado.css">
-    <link rel="stylesheet" href="/public/css/switch.css">
 </head>
 <body class="menu-terminal-body">
     <header class="menu-header">
@@ -12,9 +11,7 @@
             <span class="menu-terminal-title">Terminal - Mozo</span>
             <div class="menu-time-display" id="timeDisplay">00:00:00</div>
         </div>
-        <div class="menu-user-info">
-            Mozo: Juan Pérez
-        </div>
+        <div class="menu-user-info">Mozo: Juan Pérez</div>
     </header>
 
     <main class="menu-main">
@@ -23,11 +20,11 @@
                 <div>
                     <h2>Enviar pedido</h2>
                     <label>Mesa:
-                    <select id="mesaSelect">
-                      <?php foreach ($mesas as $mesa): ?>
-                     <option value="<?= $mesa['id'] ?>">Mesa <?= $mesa['numero'] ?></option>
-                     <?php endforeach; ?>
-                    </select>
+                        <select id="mesaSelect">
+                            <?php foreach ($mesas as $mesa): ?>
+                                <option value="<?= $mesa['id'] ?>">Mesa <?= $mesa['numero'] ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </label>
                 </div>
                 <div class="menu-mesa-status">Pedido en curso</div>
@@ -36,7 +33,7 @@
             <div class="menu-menu-list">
                 <div class="menu-category-title">Pizzas</div>
                 <?php foreach ($pizzas as $pizza): ?>
-                    <div class="menu-menu-item">
+                    <div class="menu-menu-item" data-id="<?= $pizza['id'] ?>">
                         <div class="menu-item-info">
                             <div class="menu-item-name"><?= htmlspecialchars($pizza['nombre']) ?></div>
                             <div class="menu-item-description"><?= htmlspecialchars($pizza['descripcion']) ?></div>
@@ -52,7 +49,7 @@
 
                 <div class="menu-category-title">Bebidas</div>
                 <?php foreach ($bebidas as $bebida): ?>
-                    <div class="menu-menu-item">
+                    <div class="menu-menu-item" data-id="<?= $bebida['id'] ?>">
                         <div class="menu-item-info">
                             <div class="menu-item-name"><?= htmlspecialchars($bebida['nombre']) ?></div>
                             <div class="menu-item-description"><?= htmlspecialchars($bebida['descripcion']) ?></div>
@@ -76,8 +73,7 @@
 
     <script>
         function updateClock() {
-            const now = new Date();
-            document.getElementById('timeDisplay').textContent = now.toLocaleTimeString();
+            document.getElementById('timeDisplay').textContent = new Date().toLocaleTimeString();
         }
         setInterval(updateClock, 1000);
         updateClock();
@@ -117,29 +113,29 @@
 
         document.querySelector('.menu-order-btn').addEventListener('click', () => {
             const mesaId = document.getElementById('mesaSelect').value;
-            const items = [];
+            const productos = [];
 
             document.querySelectorAll('.menu-menu-item').forEach(item => {
-                const nombre = item.querySelector('.menu-item-name').textContent;
+                const id = item.dataset.id;
                 const cantidad = parseInt(item.querySelector('.menu-quantity-display').textContent);
                 if (cantidad > 0) {
-                    items.push({ nombre, cantidad });
+                    productos.push({ id: parseInt(id), cantidad });
                 }
             });
 
             fetch('<?= App::baseUrl() ?>/pedido/guardar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    mesa_id: mesaId,
-                    productos: items,
-                    total: total
-                })
+                body: JSON.stringify({ mesa_id: mesaId, productos: productos })
             })
             .then(res => res.text())
             .then(res => {
-                alert('Pedido enviado correctamente.');
-                window.location.reload();
+                if (res.trim() === 'ok') {
+                    alert('Pedido enviado correctamente.');
+                    location.reload();
+                } else {
+                    alert('Error al enviar pedido');
+                }
             });
         });
     </script>
