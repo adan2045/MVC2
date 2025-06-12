@@ -3,54 +3,53 @@ namespace app\controllers;
 
 use \Controller;
 use \Response;
+use \App;
 use app\models\MesaModel;
 use app\controllers\SesionController;
 
 class MesaController extends Controller
 {
-    public function actionIndex($var = null){
-        echo "Esto es el inicio";
-    }
-    
     public function actionListado()
     {
         static::path();
         SesionController::redirigirSiNoAutenticado();
         $head = \app\controllers\SiteController::head();
-		$nav = \app\controllers\SiteController::nav();  // <-- Línea nueva
-		$footer = \app\controllers\SiteController::footer();
+        $nav = \app\controllers\SiteController::nav();
+        $footer = \app\controllers\SiteController::footer();
 
         $modelo = new MesaModel();
         $mesas = $modelo->obtenerTodas();
 
         Response::render($this->viewDir(__NAMESPACE__), 'listado', [
-    	'title' => 'Listado de Mesas',
-    	'head' => $head,
-    	'nav' => $nav,  // <-- Línea nueva
-    	'footer' => $footer,
-        'ruta'=> self::$ruta, 
-    	'mesas' => $mesas
-]);
+            'title' => 'Listado de Mesas',
+            'head' => $head,
+            'nav' => $nav,
+            'footer' => $footer,
+            'ruta' => App::baseUrl(),
+            'mesas' => $mesas
+        ]);
     }
 
     public function actionFormulario()
-{
-    SesionController::redirigirSiNoAutenticado();
-    $head = \app\controllers\SiteController::head();
-    $nav = \app\controllers\SiteController::nav(); // <- ESTA LÍNEA ES CLAVE
-    $footer = \app\controllers\SiteController::footer();
+    {
+        static::path();
+        SesionController::redirigirSiNoAutenticado();
+        $head = \app\controllers\SiteController::head();
+        $nav = \app\controllers\SiteController::nav();
+        $footer = \app\controllers\SiteController::footer();
 
-    Response::render($this->viewDir(__NAMESPACE__), 'formulario', [
-        'title' => 'Nueva Mesa',
-        'head' => $head,
-        'ruta'=> self::$ruta, 
-        'nav' => $nav, // <- ESTA TAMBIÉN
-        'footer' => $footer
-    ]);
-}
+        Response::render($this->viewDir(__NAMESPACE__), 'formulario', [
+            'title' => 'Nueva Mesa',
+            'head' => $head,
+            'nav' => $nav,
+            'footer' => $footer,
+            'ruta' => App::baseUrl()
+        ]);
+    }
 
     public function actionGuardar()
     {
+        static::path();
         SesionController::redirigirSiNoAutenticado();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $qr_code = $_POST['qr_code'] ?? '';
@@ -60,19 +59,21 @@ class MesaController extends Controller
 
             $modelo = new MesaModel();
             $modelo->guardar($qr_code, $estado, $link_qr, $numero);
-        }
 
-        header('Location: /mesa/listado');
-        exit;
+            echo "<p style='color: green; font-weight: bold;'>✅ Mesa guardada correctamente.</p>";
+            echo "<script>setTimeout(() => window.location.href = '" . App::baseUrl() . "/mesa/listado', 1500);</script>";
+            exit;
+        }
     }
 
     public function actionModificar()
     {
+        static::path();
         SesionController::redirigirSiNoAutenticado();
         $id = $_GET['id'] ?? null;
 
-        if (!$id) {
-            echo "ID no válido";
+        if (!$id || !is_numeric($id)) {
+            echo "<p style='color:red;'>ID inválido.</p>";
             return;
         }
 
@@ -80,24 +81,29 @@ class MesaController extends Controller
         $mesa = $modelo->obtenerPorId($id);
 
         if (!$mesa) {
-            echo "Mesa no encontrada";
+            echo "<p style='color:red;'>Mesa no encontrada.</p>";
             return;
         }
 
+        $mesa = (array) $mesa;
+
         $head = \app\controllers\SiteController::head();
+        $nav = \app\controllers\SiteController::nav();
         $footer = \app\controllers\SiteController::footer();
 
-        Response::render($this->viewDir(__NAMESPACE__), 'formulario', [
+        Response::render($this->viewDir(__NAMESPACE__), 'modificar', [
             'title' => 'Editar Mesa',
             'head' => $head,
-            'ruta'=> self::$ruta, 
+            'nav' => $nav,
             'footer' => $footer,
-            'mesa' => $mesa
+            'mesa' => $mesa,
+            'ruta' => App::baseUrl()
         ]);
     }
 
     public function actionActualizar()
     {
+        static::path();
         SesionController::redirigirSiNoAutenticado();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = $_POST['id'] ?? null;
@@ -109,15 +115,17 @@ class MesaController extends Controller
             if ($id) {
                 $modelo = new MesaModel();
                 $modelo->actualizar($id, $qr_code, $estado, $link_qr, $numero);
+
+                echo "<p style='color: green; font-weight: bold;'>✅ Mesa actualizada correctamente.</p>";
+                echo "<script>setTimeout(() => window.location.href = '" . App::baseUrl() . "/mesa/listado', 1500);</script>";
+                exit;
             }
         }
-
-        header('Location: /mesa/listado');
-        exit;
     }
 
     public function actionEliminar()
     {
+        static::path();
         SesionController::redirigirSiNoAutenticado();
         $id = $_GET['id'] ?? null;
 
@@ -126,7 +134,7 @@ class MesaController extends Controller
             $modelo->eliminar($id);
         }
 
-        header('Location: /mesa/listado');
+        header('Location: ' . App::baseUrl() . '/mesa/listado');
         exit;
     }
 }

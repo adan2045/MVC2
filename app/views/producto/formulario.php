@@ -5,7 +5,7 @@
     <title><?= $title ?></title>
 </head>
 <body class="body-registro">
-<header><?= $nav ?></header>
+
 
 <main>
     <div class="registro-container">
@@ -53,6 +53,6 @@
     </div>
 </main>
 
-<?= $footer ?>
+
 </body>
 </html>

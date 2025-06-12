@@ -31,6 +31,7 @@ class ProductoController extends Controller
     public function actionFormulario()
     {
         static::path();
+        SesionController::redirigirSiNoAutenticado();
         $head = \app\controllers\SiteController::head();
         $nav = \app\controllers\SiteController::nav();
         $footer = \app\controllers\SiteController::footer();
@@ -47,6 +48,7 @@ class ProductoController extends Controller
     public function actionGuardar()
     {
         static::path();
+        SesionController::redirigirSiNoAutenticado();
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $nombre = $_POST["nombre"] ?? '';
             $descripcion = $_POST["descripcion"] ?? '';
@@ -69,6 +71,7 @@ class ProductoController extends Controller
     public function actionModificar()
     {
         static::path();
+        SesionController::redirigirSiNoAutenticado();
         $id = $_GET['id'] ?? null;
         if (!$id || !is_numeric($id)) {
             echo "<p style='color:red;'>ID inválido.</p>";

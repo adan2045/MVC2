@@ -5,14 +5,14 @@
     <title><?= $title ?></title>
 </head>
 <body>
-    <header><?= $nav ?></header>  <!-- Esta línea es la que muestra el menú -->
+    
     <main>
         <div class="registro-container">
             <div class="registro-header">
                 <h1><?= isset($mesa) ? 'Editar Mesa' : 'Nueva Mesa' ?></h1>
             </div>
 
-            <form action="<?= isset($mesa) ? '/mesa/actualizar' : '/mesa/guardar' ?>" method="POST" class="registro-form">
+            <form action="<?= isset($mesa) ? $ruta . '/mesa/actualizar' : $ruta . '/mesa/guardar' ?>" method="POST" class="registro-form">
                 <?php if (isset($mesa)): ?>
                     <input type="hidden" name="id" value="<?= $mesa['id'] ?>">
                 <?php endif; ?>
@@ -47,11 +47,10 @@
             </form>
 
             <div class="registro-footer">
-                <a href="<?=$ruta?>mesa/listado">Volver al Listado</a>
+                <a href="<?= $ruta ?>/mesa/listado">Volver al Listado</a>
             </div>
         </div>
     </main>
 
-    <?= $footer ?>
 </body>
 </html>
