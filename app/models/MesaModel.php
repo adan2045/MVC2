@@ -12,27 +12,54 @@ class MesaModel
         $this->db = new DataBase();
     }
 
-    /**
-     * Obtener todas las mesas ordenadas por ID descendente.
-     */
     public function obtenerTodas()
     {
         $sql = "SELECT * FROM mesas ORDER BY id DESC";
         return $this->db->query($sql, [], true);
     }
 
-    /**
-     * Insertar nueva mesa.
-     */
+    public function obtenerConTotales()
+{
+    $sql = "
+        SELECT 
+            m.id,
+            m.numero,
+            m.estado,
+            COALESCE(SUM(p.precio * pd.cantidad), 0) AS total
+        FROM mesas m
+        LEFT JOIN pedidos pe ON pe.mesa_id = m.id 
+            AND DATE(pe.fecha) = CURDATE()
+            AND pe.cerrado = 0
+        LEFT JOIN pedido_detalle pd ON pd.pedido_id = pe.id
+        LEFT JOIN productos p ON p.id = pd.producto_id
+        GROUP BY m.id, m.numero, m.estado
+        ORDER BY m.numero;
+    ";
+    return $this->db->query($sql, [], true);
+}
+
+    public function existeNumero($numero)
+    {
+        $sql = "SELECT COUNT(*) FROM mesas WHERE numero = ?";
+        $stmt = DataBase::getInstance()->getConnection()->prepare($sql);
+        $stmt->execute([$numero]);
+        return $stmt->fetchColumn() > 0;
+    }
+
+    public function existeNumeroEnOtraMesa($numero, $idActual)
+    {
+        $sql = "SELECT COUNT(*) FROM mesas WHERE numero = ? AND id != ?";
+        $stmt = DataBase::getInstance()->getConnection()->prepare($sql);
+        $stmt->execute([$numero, $idActual]);
+        return $stmt->fetchColumn() > 0;
+    }
+
     public function guardar($qr_code, $estado, $link_qr, $numero)
     {
         $sql = "INSERT INTO mesas (qr_code, estado, link_qr, numero) VALUES (?, ?, ?, ?)";
         return $this->db->execute($sql, [$qr_code, $estado, $link_qr, $numero]);
     }
 
-    /**
-     * Obtener una mesa por su ID.
-     */
     public function obtenerPorId($id)
     {
         $sql = "SELECT * FROM mesas WHERE id = ?";
@@ -40,18 +67,12 @@ class MesaModel
         return $resultado[0] ?? null;
     }
 
-    /**
-     * Actualizar los datos de una mesa.
-     */
     public function actualizar($id, $qr_code, $estado, $link_qr, $numero)
     {
         $sql = "UPDATE mesas SET qr_code = ?, estado = ?, link_qr = ?, numero = ? WHERE id = ?";
         return $this->db->execute($sql, [$qr_code, $estado, $link_qr, $numero, $id]);
     }
 
-    /**
-     * Eliminar una mesa por su ID.
-     */
     public function eliminar($id)
     {
         $sql = "DELETE FROM mesas WHERE id = ?";

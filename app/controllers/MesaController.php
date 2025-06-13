@@ -58,6 +58,13 @@ class MesaController extends Controller
             $numero = $_POST['numero'] ?? 0;
 
             $modelo = new MesaModel();
+
+            if ($modelo->existeNumero($numero)) {
+                echo "<p style='color: red; font-weight: bold; text-align: center;'>❌ Ya existe una mesa con ese número.</p>";
+                echo "<script>setTimeout(() => window.location.href = '" . App::baseUrl() . "/mesa/formulario', 2000);</script>";
+                exit;
+            }
+
             $modelo->guardar($qr_code, $estado, $link_qr, $numero);
 
             echo "<p style='color: green; font-weight: bold;'>✅ Mesa guardada correctamente.</p>";
@@ -114,6 +121,13 @@ class MesaController extends Controller
 
             if ($id) {
                 $modelo = new MesaModel();
+
+                if ($modelo->existeNumeroEnOtraMesa($numero, $id)) {
+                    echo "<p style='color: red; font-weight: bold; text-align: center;'>❌ Ya existe otra mesa con ese número.</p>";
+                    echo "<script>setTimeout(() => window.location.href = '" . App::baseUrl() . "/mesa/modificar?id=$id', 2000);</script>";
+                    exit;
+                }
+
                 $modelo->actualizar($id, $qr_code, $estado, $link_qr, $numero);
 
                 echo "<p style='color: green; font-weight: bold;'>✅ Mesa actualizada correctamente.</p>";

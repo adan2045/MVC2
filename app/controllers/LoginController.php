@@ -67,7 +67,6 @@ class LoginController extends Controller
                     $usuario = $usuarioModel->buscarPorEmail($mail);
 
                     if ($usuario) {
-                        // Manejar password hasheado o sin hashear (caso transición)
                         if (
                             password_verify($password, $usuario['password']) || 
                             $password === $usuario['password']
@@ -77,8 +76,27 @@ class LoginController extends Controller
                             $_SESSION['user_email'] = $usuario['email'];
                             $_SESSION['user_rol'] = $usuario['rol'];
 
-                            header("Location: " . self::$ruta . "/admin/gestion");
-                            exit();
+                            // Redirigir según rol
+                            $rol = trim(strtolower($usuario['rol']));
+
+                            switch ($rol) {
+                                case 'mozo':
+                                    header("Location: " . self::$ruta . "/menu/mozo");
+                                    break;
+                                case 'admin':
+                                case 'superadmin':
+                                    header("Location: " . self::$ruta . "/admin/gestion");
+                                    break;
+                                case 'cajero':
+                                    header("Location: " . self::$ruta . "/cajero/vistaCajero");
+                                    break;
+                                case 'cliente':
+                                    header("Location: " . self::$ruta . "/menu");
+                                    break;
+                                default:
+                                    header("Location: " . self::$ruta . "/home/index");
+                            }
+                            exit;
                         } else {
                             $error_pass = 'Contraseña incorrecta';
                         }
@@ -99,7 +117,7 @@ class LoginController extends Controller
         Response::render($this->viewDir(__NAMESPACE__), "login", [
             "title" => $this->title . "Login",
             "head" => $head,
-            'ruta'=>self::$ruta,
+            'ruta' => self::$ruta,
             "nav" => $nav,
             "footer" => $footer,
             "mail" => $mail,
@@ -109,13 +127,14 @@ class LoginController extends Controller
             "general_error" => $general_error,
         ]);
     }
-    public function actionLogout()
-{
-    session_start();
-    session_unset();
-    session_destroy();
 
-    header("Location: " . self::$ruta . "/");
-    exit();
-}
+    public function actionLogout()
+    {
+        session_start();
+        session_unset();
+        session_destroy();
+
+        header("Location: " . self::$ruta . "/");
+        exit();
+    }
 }

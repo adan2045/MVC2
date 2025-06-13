@@ -37,6 +37,7 @@ class PedidoModel
         return false;
     }
 }
+    
    public function obtenerPedidosDelDiaConDetalle()
 {
     $sql = "

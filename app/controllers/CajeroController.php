@@ -1,27 +1,25 @@
 <?php
 namespace app\controllers;
+
 use \Controller;
 use \Response;
 use \DataBase;
 use app\controllers\SesionController;
+use app\models\MesaModel;
 
-Class CajeroController extends Controller {
-	public $nombre='';
+class CajeroController extends Controller {
+	public $nombre = '';
 	public $apellido;
-    
 
+	public function __construct() {}
 
-    public function __construct()
+	public function actionIndex($var = null)
 	{
-
-	}
-
-    public function actionIndex($var=null)
-	{	
 		$footer = SiteController::footer();
 		$head = SiteController::head();
 		$nav = SiteController::nav();
 		$path = static::path();
+
 		Response::render($this->viewDir(__NAMESPACE__), "inicio", [
 			"title" => $this->title . "Inicio",
 			"head" => $head,
@@ -29,37 +27,89 @@ Class CajeroController extends Controller {
 			"footer" => $footer,
 		]);
 	}
-    public function actionVistaCajero()
-    {	
-        $path = static::path();
+
+	public function actionVistaCajero()
+	{
+		if (session_status() === PHP_SESSION_NONE) {
+			session_start();
+		}
+
 		$footer = SiteController::footer();
 		$head = SiteController::head();
 		$nav = SiteController::nav();
+		$path = static::path();
+
+		$mesaModel = new MesaModel();
+		$mesas = $mesaModel->obtenerConTotales();
+
 		Response::render($this->viewDir(__NAMESPACE__), "vistaCajero", [
 			"title" => $this->title . "Mesas",
-            'ruta'=>self::$ruta,
+			'ruta' => self::$ruta,
+			"head" => $head,
+			"nav" => $nav,
+			"footer" => $footer,
+			"mesas" => $mesas,
+			"cajero" => $_SESSION['user_email'] ?? 'Sin sesión'
+		]);
+	}
+
+	public function actionCuenta()
+	{
+		$path = static::path();
+		$footer = SiteController::footer();
+		$head = SiteController::head();
+		$nav = SiteController::nav();
+
+		Response::render('cajero', 'cuenta', [
+			"title" => "Cuenta Cerrada",
+			'ruta' => self::$ruta,
 			"head" => $head,
 			"nav" => $nav,
 			"footer" => $footer,
 		]);
 	}
-     public function actionCuenta()
-{   
-        $path = static::path();
-        $footer = SiteController::footer();
-		$head = SiteController::head();
-		$nav = SiteController::nav();
-    // Datos para la vista
-    $data = [
-        "title" => "Cuenta Cerrada",
-        'ruta'=>self::$ruta,
-        "head" => $head,
-		"nav" => $nav,
-		"footer" => $footer,
-    ];
 
-    // Renderiza la vista 'cuenta' dentro de la carpeta 'cajero' pasando los datos
-    Response::render('cajero', 'cuenta', $data);
+	public function actionPagarMesa()
+	{
+		if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mesa_id'])) {
+			$mesaId = intval($_POST['mesa_id']);
+			$db = DataBase::getInstance()->getConnection();
+
+			try {
+				$stmt = $db->prepare("
+					DELETE pd FROM pedido_detalle pd
+					JOIN pedidos p ON pd.pedido_id = p.id
+					WHERE p.mesa_id = ? AND DATE(p.fecha) = CURDATE()
+				");
+				$stmt->execute([$mesaId]);
+				echo 'ok';
+			} catch (\Exception $e) {
+				http_response_code(500);
+				echo 'error';
+			}
+		} else {
+			http_response_code(400);
+			echo 'error';
+		}
+	}
+    public function actionMarcarPagado()
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $mesa_id = $_POST['mesa_id'] ?? null;
+
+        if ($mesa_id) {
+            $pedidoModel = new \app\models\PedidoModel();
+            $pedidoModel->cerrarPedidosDeHoyPorMesa($mesa_id);
+
+            $mesaModel = new \app\models\MesaModel();
+            $mesaModel->actualizarEstado($mesa_id, 'disponible');
+
+            echo 'ok';
+        } else {
+            http_response_code(400);
+            echo 'Faltan datos';
+        }
+    }
 }
 }
 
