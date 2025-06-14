@@ -70,28 +70,34 @@ class CajeroController extends Controller {
 	}
 
 	public function actionPagarMesa()
-	{
-		if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mesa_id'])) {
-			$mesaId = intval($_POST['mesa_id']);
-			$db = DataBase::getInstance()->getConnection();
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mesa_id'])) {
+        $mesaId = intval($_POST['mesa_id']);
+        $db = \DataBase::getInstance()->getConnection();
 
-			try {
-				$stmt = $db->prepare("
-					DELETE pd FROM pedido_detalle pd
-					JOIN pedidos p ON pd.pedido_id = p.id
-					WHERE p.mesa_id = ? AND DATE(p.fecha) = CURDATE()
-				");
-				$stmt->execute([$mesaId]);
-				echo 'ok';
-			} catch (\Exception $e) {
-				http_response_code(500);
-				echo 'error';
-			}
-		} else {
-			http_response_code(400);
-			echo 'error';
-		}
-	}
+        try {
+            $db->beginTransaction();
+
+            // Marcar como cerrados los pedidos de hoy
+            $stmt = $db->prepare("UPDATE pedidos SET cerrado = 1 WHERE mesa_id = ? AND DATE(fecha) = CURDATE()");
+            $stmt->execute([$mesaId]);
+
+            // Cambiar estado de la mesa a 'disponible'
+            $stmt2 = $db->prepare("UPDATE mesas SET estado = 'libre' WHERE id = ?");
+            $stmt2->execute([$mesaId]);
+
+            $db->commit();
+            echo 'ok';
+        } catch (\Exception $e) {
+            $db->rollBack();
+            http_response_code(500);
+            echo 'error';
+        }
+    } else {
+        http_response_code(400);
+        echo 'error';
+    }
+}
     public function actionMarcarPagado()
 {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
