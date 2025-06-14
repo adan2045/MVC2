@@ -75,22 +75,22 @@
             padding: 12px;
             color: black;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            height: 17px;
+            min-height: 160px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
 
         .vistaCajero-table-ocupada {
-            border-left: 6px solidrgb(0, 0, 0);
+            border-left: 6px solid red;
         }
 
         .vistaCajero-table-disponible {
-            border-left: 6px solidrgb(0, 0, 0);
+            border-left: 6px solid green;
         }
 
         .vistaCajero-table-cuenta-solicitada {
-            border-left: 6px solidrgb(1, 1, 1);
+            border-left: 6px solid orange;
         }
 
         .vistaCajero-table-number {
@@ -130,7 +130,7 @@
         }
 
         .vistaCajero-btn-view {
-            background-color:rgb(0, 0, 0);
+            background-color: black;
         }
 
         .vistaCajero-btn-close {
@@ -181,7 +181,7 @@
                     ?>
                     <div class="<?= $class ?>">
                         <h3 class="vistaCajero-table-number">Mesa <?= $mesa['numero'] ?></h3>
-                        <div class="vistaCajero-table-state"><?= $estadoTexto ?></div>
+                        <div class="vistaCajero-table-state">Estado: <?= $estadoTexto ?></div>
                         <div class="vistaCajero-table-info">
                             <div class="vistaCajero-table-time">
                                 <?= $estado === 'disponible' ? 'Lista para usar' : '---' ?>

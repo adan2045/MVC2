@@ -27,7 +27,10 @@
                         </select>
                     </label>
                 </div>
-                <div class="menu-mesa-status">Pedido en curso</div>
+                <div class="menu-header-buttons">
+                <button onclick="cambiarEstadoMesa('ocupada')">Mesa Ocupada</button>
+                <button onclick="cambiarEstadoMesa('cuenta_solicitada')">Pedir Cuenta</button>
+                </div>
             </div>
 
             <div class="menu-menu-list">

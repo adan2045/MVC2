@@ -20,7 +20,10 @@
                     <h2>Bienvenidos</h2>
                     <h2>Mesa 1</h2>
                 </div>
-                <div class="menu-mesa-status">Pedido en curso</div>
+                <div class="menu-header-buttons">
+                
+                <button onclick="cambiarEstadoMesa('cuenta_solicitada')">Pedir Cuenta</button>
+                </div>
             </div>
 
             <div class="menu-menu-list">
