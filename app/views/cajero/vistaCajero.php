@@ -7,47 +7,20 @@
     <link rel="stylesheet" href="/public/css/crud.css">
     <link rel="stylesheet" href="/public/css/listado.css">
     <style>
-        body {
-            background-color: #f5f5f5;
-            font-family: Arial, sans-serif;
-        }
-
-        .vistaCajero-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: black;
-            color: white;
-            padding: 10px 20px;
-        }
-
-        .hamburger {
-            cursor: pointer;
-            font-size: 1.2rem;
-            margin-left: 10px;
-        }
-
+        
+        
         .vistaCajero-user-info {
             display: flex;
             align-items: center;
             gap: 0px;
         }
 
-        .logout-menu {
-            display: none;
-            position: absolute;
-            right: 10px;
-            top: 0px;
-            background: black;
-            border: 1px solid #ccc;
-            padding: 5px 10px;
-            z-index: 999;
-        }
+    
 
         .vistaCajero-toggle {
             display: flex;
             justify-content: center;
-            margin: 50px 20px 20px 20px;
+            margin: 20px 0px 20px 20px;
         }
 
         .vistaCajero-toggle button {
@@ -144,18 +117,7 @@
     </style>
 </head>
 <body class="vistaCajero-body">
-    <header class="vistaCajero-header">
-        <div class="vistaCajero-terminal-info">
-            <span class="vistaCajero-terminal-title">Terminal Principal</span>
-        </div>
-        <div class="vistaCajero-user-info">
-            <span><?= $cajero ?></span>
-            <span class="hamburger" onclick="document.getElementById('logoutMenu').style.display = 'block'">☰</span>
-        </div>
-        <div id="logoutMenu" class="logout-menu">
-            <a href="<?= $ruta ?>/login/logout">Cerrar sesión</a>
-        </div>
-    </header>
+    <header><?= $nav ?></header>
 
     <div class="vistaCajero-toggle">
         <button class="active" onclick="mostrar('mesas')">Estado de Mesas</button>
