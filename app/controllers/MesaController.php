@@ -152,6 +152,7 @@ class MesaController extends Controller
     }
 }
 
+
     public function actionEliminar()
     {
         static::path();
