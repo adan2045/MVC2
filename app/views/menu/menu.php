@@ -1,28 +1,34 @@
+<?php
+// Para pruebas usamos la Mesa 1 fija
+$mesaId = 1;
+
+// Si más adelante querés que se lea desde la URL (ej: menu.php?mesa=2), descomentá esta línea:
+// $mesaId = $_GET['mesa'] ?? null;
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <?= $head ?>
-    <title><?= $title ?></title>
+    <title><?= $title ?? 'Menú Cliente' ?></title>
+    <link rel="stylesheet" href="/public/css/listado.css">
 </head>
 <body class="menu-terminal-body">
     <header class="menu-header">
         <div class="menu-terminal-info">
-            <span class="menu-terminal-title">Terminal Carta - Mesa 1</span>
+            <span class="menu-terminal-title">Terminal Carta - Mesa <?= $mesaId ?></span>
             <div class="menu-time-display" id="timeDisplay">00:00:00</div>
         </div>
-        <div class="menu-user-info">Mozo: Juan Pérez | ID: M001</div>
+        <div class="menu-user-info">Bienvenidos</div>
     </header>
 
     <main class="menu-main">
         <div class="menu-mesa-activa">
             <div class="menu-mesa-header">
                 <div>
-                    <h2>Bienvenidos</h2>
-                    <h2>Mesa 1</h2>
+                    <h2>Mesa <?= $mesaId ?></h2>
                 </div>
                 <div class="menu-header-buttons">
-                
-                <button onclick="cambiarEstadoMesa('cuenta_solicitada')">Pedir Cuenta</button>
+                    <button onclick="cambiarEstadoMesa('cuenta_solicitada')">Pedir Cuenta</button>
                 </div>
             </div>
 
@@ -108,7 +114,7 @@
         }
 
         document.querySelector('.menu-order-btn').addEventListener('click', () => {
-            const mesaId = 1; // Cliente fijo
+            const mesaId = <?= $mesaId ?>;
             const productos = [];
 
             document.querySelectorAll('.menu-menu-item').forEach(item => {
@@ -122,11 +128,12 @@
             fetch('<?= App::baseUrl() ?>/pedido/guardar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mesa_id: mesaId, productos: productos })
+                body: JSON.stringify({ mesa_id: mesaId, productos })
             })
             .then(res => res.text())
             .then(res => {
                 if (res.trim() === 'ok') {
+                    cambiarEstadoMesa('ocupada');
                     alert('Pedido enviado correctamente.');
                     location.reload();
                 } else {
@@ -134,6 +141,26 @@
                 }
             });
         });
+
+        function cambiarEstadoMesa(estado) {
+    const mesaId = <?= $mesaId ?>;
+    if (!mesaId) return alert("Mesa no definida");
+
+    fetch('<?= App::baseUrl() ?>/mesa/cambiarEstado?id=' + mesaId + '&estado=' + estado, {
+        method: 'GET'
+    })
+    .then(res => res.text())
+    .then(data => {
+        if (estado === 'cuenta_solicitada') {
+            alert("✅ En breve se acercará un mozo con tu cuenta. Gracias por tu visita.");
+        }
+        location.reload();
+    })
+    .catch(err => {
+        console.error("Error AJAX:", err);
+        alert("Error de red");
+    });
+}
     </script>
 </body>
 </html>

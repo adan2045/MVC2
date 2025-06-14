@@ -73,6 +73,14 @@ class MesaModel
         return $this->db->execute($sql, [$qr_code, $estado, $link_qr, $numero, $id]);
     }
 
+    public function cambiarEstado($id, $estado)
+{
+    $conn = \DataBase::getInstance()->getConnection();
+    $sql = "UPDATE mesas SET estado = :estado WHERE id = :id";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute(['estado' => $estado, 'id' => $id]);
+}
+
     public function eliminar($id)
     {
         $sql = "DELETE FROM mesas WHERE id = ?";

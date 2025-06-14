@@ -137,6 +137,21 @@ class MesaController extends Controller
         }
     }
 
+    public function actionCambiarEstado()
+{
+    $id = $_GET['id'] ?? null;
+    $estado = $_GET['estado'] ?? null;
+
+    if ($id && $estado) {
+        $mesaModel = new \app\models\MesaModel();
+        $mesaModel->cambiarEstado($id, $estado);
+        echo "ok";
+    } else {
+        http_response_code(400);
+        echo "Error de parámetros";
+    }
+}
+
     public function actionEliminar()
     {
         static::path();

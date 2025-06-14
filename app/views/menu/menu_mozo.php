@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,7 +12,7 @@
             <span class="menu-terminal-title">Terminal - Mozo</span>
             <div class="menu-time-display" id="timeDisplay">00:00:00</div>
         </div>
-        <div class="menu-user-info">Mozo: Juan Pérez</div>
+        <div class="menu-user-info">Mozo: <?= $_SESSION['user_email'] ?? 'Sin sesión' ?></div>
     </header>
 
     <main class="menu-main">
@@ -28,8 +29,8 @@
                     </label>
                 </div>
                 <div class="menu-header-buttons">
-                <button onclick="cambiarEstadoMesa('ocupada')">Mesa Ocupada</button>
-                <button onclick="cambiarEstadoMesa('cuenta_solicitada')">Pedir Cuenta</button>
+                    <button onclick="cambiarEstadoMesa('ocupada')">Mesa Ocupada</button>
+                    <button onclick="cambiarEstadoMesa('cuenta_solicitada')">Pedir Cuenta</button>
                 </div>
             </div>
 
@@ -129,18 +130,31 @@
             fetch('<?= App::baseUrl() ?>/pedido/guardar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mesa_id: mesaId, productos: productos })
+                body: JSON.stringify({ mesa_id: mesaId, productos })
             })
             .then(res => res.text())
             .then(res => {
                 if (res.trim() === 'ok') {
-                    alert('Pedido enviado correctamente.');
-                    location.reload();
+                    if (total > 0) {
+                        fetch(`/mesa/cambiarEstado?id=${mesaId}&estado=ocupada`)
+                            .then(() => location.reload());
+                    } else {
+                        location.reload();
+                    }
                 } else {
                     alert('Error al enviar pedido');
                 }
             });
         });
+
+        function cambiarEstadoMesa(nuevoEstado) {
+            const mesaId = document.getElementById('mesaSelect')?.value;
+            if (!mesaId) return alert("Seleccioná una mesa");
+            fetch(`/mesa/cambiarEstado?id=${mesaId}&estado=${nuevoEstado}`, { method: 'GET' })
+                .then(res => res.text())
+                .then(() => location.reload())
+                .catch(err => console.error("Error al cambiar estado:", err));
+        }
     </script>
 </body>
 </html>

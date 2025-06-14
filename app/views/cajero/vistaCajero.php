@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -240,6 +241,20 @@
                 menu.style.display = 'none';
             }
         });
+
+        // 🔁 Recarga automática de mesas cada 10 segundos
+        setInterval(() => {
+            fetch(location.href)
+                .then(res => res.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const nuevasMesas = doc.querySelector('#vistaMesas');
+                    if (nuevasMesas) {
+                        document.querySelector('#vistaMesas').innerHTML = nuevasMesas.innerHTML;
+                    }
+                });
+        }, 10000);
     </script>
 </body>
 </html>
