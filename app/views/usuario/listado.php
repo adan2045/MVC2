@@ -5,7 +5,7 @@
     <title><?= $title ?? 'Listado de Usuarios' ?></title>
 </head>
 <body>
-    <header><?= $nav ?></header>
+    
 
     <main>
         <div class="listado-container">
@@ -58,6 +58,6 @@
         </div>
     </main>
 
-    <?= $footer ?>
+    
 </body>
 </html>
