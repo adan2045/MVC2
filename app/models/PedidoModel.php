@@ -82,4 +82,60 @@ public function actualizarEstadoProducto($detalleId, $estado)
         ':id' => $detalleId
     ]);
 }
+
+public function obtenerPedidosActivosPorMesa($mesaId)
+{
+    $db = \DataBase::getInstance()->getConnection();
+    $query = "SELECT p.id as pedido_id
+              FROM pedidos p
+              WHERE p.mesa_id = ? AND p.cerrado = 0";
+
+    $stmt = $db->prepare($query);
+    $stmt->execute([$mesaId]);
+    $pedidos = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    foreach ($pedidos as &$pedido) {
+        $queryDetalle = "SELECT pd.cantidad, pr.nombre, pr.descripcion, pr.precio
+                         FROM pedido_detalle pd
+                         JOIN productos pr ON pd.producto_id = pr.id
+                         WHERE pd.pedido_id = ?";
+        $stmtDetalle = $db->prepare($queryDetalle);
+        $stmtDetalle->execute([$pedido['pedido_id']]);
+        $pedido['detalles'] = $stmtDetalle->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    return $pedidos;
+}
+
+public function obtenerDetalleCuentaPorMesa($mesaId)
+{
+    $db = \DataBase::getInstance()->getConnection();
+
+    // Detalles de productos del pedido activo del día
+    $sql = "
+        SELECT p.id AS pedido_id, pr.nombre AS producto, pd.cantidad, pr.precio, (pd.cantidad * pr.precio) AS subtotal
+        FROM pedidos p
+        JOIN pedido_detalle pd ON p.id = pd.pedido_id
+        JOIN productos pr ON pd.producto_id = pr.id
+        WHERE p.mesa_id = ? AND DATE(p.fecha) = CURDATE() AND p.cerrado = 0
+    ";
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$mesaId]);
+    $productos = $stmt->fetchAll();
+
+    $total = 0;
+    foreach ($productos as $p) {
+        $total += $p['subtotal'];
+    }
+
+    // Datos de la mesa
+    $mesa = $db->prepare("SELECT * FROM mesas WHERE id = ?");
+    $mesa->execute([$mesaId]);
+
+    return [
+        'mesa' => $mesa->fetch(),
+        'productos' => $productos,
+        'total' => $total
+    ];
+}
 }

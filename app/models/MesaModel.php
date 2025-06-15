@@ -86,4 +86,10 @@ class MesaModel
         $sql = "DELETE FROM mesas WHERE id = ?";
         return $this->db->execute($sql, [$id]);
     }
+    public function actualizarEstado($id, $estado)
+{
+    $db = \DataBase::getInstance()->getConnection();
+    $stmt = $db->prepare("UPDATE mesas SET estado = ? WHERE id = ?");
+    return $stmt->execute([$estado, $id]);
+}
 }

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -21,7 +20,7 @@
                 <div>
                     <h2>Enviar pedido</h2>
                     <label>Mesa:
-                        <select id="mesaSelect">
+                        <select id="mesaSelect" onchange="resetearVista()">
                             <?php foreach ($mesas as $mesa): ?>
                                 <option value="<?= $mesa['id'] ?>">Mesa <?= $mesa['numero'] ?></option>
                             <?php endforeach; ?>
@@ -37,7 +36,7 @@
             <div class="menu-menu-list">
                 <div class="menu-category-title">Pizzas</div>
                 <?php foreach ($pizzas as $pizza): ?>
-                    <div class="menu-menu-item" data-id="<?= $pizza['id'] ?>">
+                    <div class="menu-menu-item" data-id="<?= $pizza['id'] ?>" data-precio="<?= $pizza['precio'] ?>">
                         <div class="menu-item-info">
                             <div class="menu-item-name"><?= htmlspecialchars($pizza['nombre']) ?></div>
                             <div class="menu-item-description"><?= htmlspecialchars($pizza['descripcion']) ?></div>
@@ -53,7 +52,7 @@
 
                 <div class="menu-category-title">Bebidas</div>
                 <?php foreach ($bebidas as $bebida): ?>
-                    <div class="menu-menu-item" data-id="<?= $bebida['id'] ?>">
+                    <div class="menu-menu-item" data-id="<?= $bebida['id'] ?>" data-precio="<?= $bebida['precio'] ?>">
                         <div class="menu-item-info">
                             <div class="menu-item-name"><?= htmlspecialchars($bebida['nombre']) ?></div>
                             <div class="menu-item-description"><?= htmlspecialchars($bebida['descripcion']) ?></div>
@@ -75,87 +74,86 @@
         </div>
     </main>
 
-   <script>
-    function updateClock() {
-        document.getElementById('timeDisplay').textContent = new Date().toLocaleTimeString();
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
+    <script>
+        const totalDisplay = document.querySelector('.menu-total-amount');
 
-    let total = 0;
-    const totalDisplay = document.querySelector('.menu-total-amount');
-    const quantityControls = document.querySelectorAll('.menu-quantity-control');
+        function updateClock() {
+            document.getElementById('timeDisplay').textContent = new Date().toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
 
-    quantityControls.forEach(control => {
-        const minusBtn = control.querySelector('.menu-quantity-btn:first-child');
-        const plusBtn = control.querySelector('.menu-quantity-btn:last-child');
-        const display = control.querySelector('.menu-quantity-display');
-        const priceText = control.parentElement.querySelector('.menu-item-price').textContent;
-        const cleanPrice = priceText.replace('$', '').replace(/\./g, '').replace(',', '.');
-        const price = parseFloat(cleanPrice);
-
-        plusBtn.addEventListener('click', () => {
-            let quantity = parseInt(display.textContent);
-            display.textContent = quantity + 1;
-            total += price;
+        function resetearVista() {
+            document.querySelectorAll('.menu-quantity-display').forEach(el => el.textContent = '0');
+            total = 0;
             updateTotal();
-        });
+        }
 
-        minusBtn.addEventListener('click', () => {
-            let quantity = parseInt(display.textContent);
-            if (quantity > 0) {
-                display.textContent = quantity - 1;
-                total -= price;
+        let total = 0;
+        function updateTotal() {
+            total = 0;
+            document.querySelectorAll('.menu-menu-item').forEach(item => {
+                const cantidad = parseInt(item.querySelector('.menu-quantity-display').textContent);
+                const precio = parseFloat(item.dataset.precio);
+                total += cantidad * precio;
+            });
+            totalDisplay.textContent = `Total: $${total.toLocaleString('es-AR')}`;
+        }
+
+        document.querySelectorAll('.menu-quantity-control').forEach(control => {
+            const display = control.querySelector('.menu-quantity-display');
+            const parent = control.closest('.menu-menu-item');
+
+            control.querySelectorAll('.menu-quantity-btn')[1].addEventListener('click', () => {
+                display.textContent = parseInt(display.textContent) + 1;
                 updateTotal();
-            }
-        });
-    });
+            });
 
-    function updateTotal() {
-        totalDisplay.textContent = `Total: $${total.toLocaleString('es-AR')}`;
-    }
-
-    document.querySelector('.menu-order-btn').addEventListener('click', () => {
-        const mesaId = document.getElementById('mesaSelect').value;
-        const productos = [];
-
-        document.querySelectorAll('.menu-menu-item').forEach(item => {
-            const id = item.dataset.id;
-            const cantidad = parseInt(item.querySelector('.menu-quantity-display').textContent);
-            if (cantidad > 0) {
-                productos.push({ id: parseInt(id), cantidad });
-            }
+            control.querySelectorAll('.menu-quantity-btn')[0].addEventListener('click', () => {
+                if (parseInt(display.textContent) > 0) {
+                    display.textContent = parseInt(display.textContent) - 1;
+                    updateTotal();
+                }
+            });
         });
 
-        fetch('<?= App::baseUrl() ?>/pedido/guardar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ mesa_id: mesaId, productos })
-        })
-        .then(res => res.text())
-        .then(res => {
-            if (res.trim() === 'ok') {
-                cambiarEstadoMesa('ocupada');
-            } else {
-                alert('Error al enviar pedido');
-            }
-        });
-    });
+        document.querySelector('.menu-order-btn').addEventListener('click', () => {
+            const mesaId = document.getElementById('mesaSelect').value;
+            const productos = [];
 
-    function cambiarEstadoMesa(estado) {
-        const mesaId = document.getElementById('mesaSelect')?.value;
-        if (!mesaId) return alert("Seleccioná una mesa");
-        fetch(`<?= App::baseUrl() ?>/mesa/cambiarEstado?id=${mesaId}&estado=${estado}`)
+            document.querySelectorAll('.menu-menu-item').forEach(item => {
+                const cantidad = parseInt(item.querySelector('.menu-quantity-display').textContent);
+                if (cantidad > 0) {
+                    productos.push({ id: parseInt(item.dataset.id), cantidad });
+                }
+            });
+
+            fetch('<?= \App::baseUrl() ?>/pedido/guardar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mesa_id: mesaId, productos })
+            })
             .then(res => res.text())
             .then(res => {
                 if (res.trim() === 'ok') {
-                    console.log("Estado actualizado correctamente");
+                    cambiarEstadoMesa('ocupada');
+                    resetearVista();
                 } else {
-                    alert("Error al actualizar estado");
+                    alert('Error al enviar pedido');
                 }
-            })
-            .catch(err => console.error("Error al cambiar estado:", err));
-    }
-</script>
+            });
+        });
+
+        function cambiarEstadoMesa(estado) {
+            const mesaId = document.getElementById('mesaSelect').value;
+            fetch(`<?= \App::baseUrl() ?>/mesa/cambiarEstado?id=${mesaId}&estado=${estado}`)
+                .then(res => res.text())
+                .then(res => {
+                    if (res.trim() !== 'ok') {
+                        alert("Error al cambiar el estado de la mesa");
+                    }
+                });
+        }
+    </script>
 </body>
 </html>

@@ -108,6 +108,20 @@ class MesaController extends Controller
         ]);
     }
 
+    public function actionSolicitarCuenta()
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $mesaId = $_POST['mesa_id'] ?? null;
+        if ($mesaId) {
+            $mesaModel = new \app\models\MesaModel();
+            $mesaModel->actualizarEstado($mesaId, 'cuenta_solicitada');
+            echo 'ok';
+        } else {
+            http_response_code(400);
+            echo 'error';
+        }
+    }
+}
     public function actionActualizar()
     {
         static::path();

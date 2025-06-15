@@ -53,21 +53,7 @@ class CajeroController extends Controller {
 		]);
 	}
 
-	public function actionCuenta()
-	{
-		$path = static::path();
-		$footer = SiteController::footer();
-		$head = SiteController::head();
-		$nav = SiteController::nav();
-
-		Response::render('cajero', 'cuenta', [
-			"title" => "Cuenta Cerrada",
-			'ruta' => self::$ruta,
-			"head" => $head,
-			"nav" => $nav,
-			"footer" => $footer,
-		]);
-	}
+	
 
 	public function actionPagarMesa()
 {
@@ -97,6 +83,80 @@ class CajeroController extends Controller {
         http_response_code(400);
         echo 'error';
     }
+}
+
+public function actionCuentaMesa()
+{
+    if (!isset($_GET['id'])) {
+        echo "Mesa no especificada";
+        return;
+    }
+
+    $mesaId = intval($_GET['id']);
+
+    $pedidoModel = new \app\models\PedidoModel();
+    $pedidos = $pedidoModel->obtenerPedidosActivosPorMesa($mesaId);
+
+    $productos = [];
+    $total = 0;
+
+    foreach ($pedidos as $pedido) {
+        foreach ($pedido['detalles'] as $detalle) {
+            $subtotal = $detalle['precio'] * $detalle['cantidad'];
+            $productos[] = [
+                'nombre' => $detalle['nombre'],
+                'descripcion' => $detalle['descripcion'],
+                'precio' => $detalle['precio'],
+                'cantidad' => $detalle['cantidad'],
+                'subtotal' => $subtotal
+            ];
+            $total += $subtotal;
+        }
+    }
+
+    $mesaModel = new \app\models\MesaModel();
+    $mesa = $mesaModel->obtenerPorId($mesaId);
+
+    // 💡 Estas variables son claves para que no dé error la vista
+    $head = SiteController::head();
+    $nav = SiteController::nav();
+    $footer = SiteController::footer();
+
+    Response::render('cajero', 'cuenta', [
+        'productos' => $productos,
+        'total' => $total,
+        'mesa' => $mesa,
+        'ruta' => \App::baseUrl(),
+        'head' => $head,
+        'nav' => $nav,
+        'footer' => $footer
+    ]);
+}
+public function actionCuenta()
+{
+    if (!isset($_GET['id'])) {
+        echo "Mesa no especificada.";
+        return;
+    }
+
+    $mesaId = intval($_GET['id']);
+    $pedidoModel = new \app\models\PedidoModel();
+    $datos = $pedidoModel->obtenerDetalleCuentaPorMesa($mesaId);
+
+    $footer = SiteController::footer();
+    $head = SiteController::head();
+    $nav = SiteController::nav();
+
+    Response::render('cajero', 'cuenta', [  // 👈 CAMBIADO de 'cuenta_mesa' a 'cuenta'
+        'head' => $head,
+        'title' => 'Cuenta de Mesa',
+        'nav' => $nav,
+        'footer' => $footer,
+        'mesa' => $datos['mesa'],
+        'productos' => $datos['productos'],
+        'total' => $datos['total'],
+        'ruta' => \App::baseUrl(), // 👈 AGREGADO para que los botones funcionen
+    ]);
 }
     public function actionMarcarPagado()
 {
