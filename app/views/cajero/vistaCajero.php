@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <?= $head ?>
     <title><?= $title ?? 'Terminal Cajero' ?></title>
@@ -45,7 +46,7 @@
             border-radius: 12px;
             padding: 12px;
             color: black;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
             min-height: 160px;
             display: flex;
             flex-direction: column;
@@ -73,14 +74,14 @@
 
         .vistaCajero-table-state {
             font-weight: bold;
-            color:black;
+            color: black;
         }
 
         .vistaCajero-table-info {
             display: flex;
             justify-content: space-between;
             font-size: 0.9rem;
-            color:black;
+            color: black;
         }
 
         .vistaCajero-action-buttons {
@@ -113,6 +114,7 @@
         }
     </style>
 </head>
+
 <body class="vistaCajero-body">
     <header><?= $nav ?></header>
 
@@ -126,18 +128,18 @@
             <div class="vistaCajero-tables-grid">
                 <?php foreach ($mesas as $mesa): ?>
                     <?php
-                        $estado = strtolower($mesa['estado']);
-                        $class = 'vistaCajero-table-card';
-                        if ($estado === 'ocupada') {
-                            $class .= ' vistaCajero-table-ocupada';
-                            $estadoTexto = 'OCUPADA';
-                        } elseif ($estado === 'cuenta_solicitada') {
-                            $class .= ' vistaCajero-table-cuenta-solicitada';
-                            $estadoTexto = 'CUENTA SOLICITADA';
-                        } else {
-                            $class .= ' vistaCajero-table-disponible';
-                            $estadoTexto = 'DISPONIBLE';
-                        }
+                    $estado = strtolower($mesa['estado']);
+                    $class = 'vistaCajero-table-card';
+                    if ($estado === 'ocupada') {
+                        $class .= ' vistaCajero-table-ocupada';
+                        $estadoTexto = 'OCUPADA';
+                    } elseif ($estado === 'cuenta_solicitada') {
+                        $class .= ' vistaCajero-table-cuenta-solicitada';
+                        $estadoTexto = 'CUENTA SOLICITADA';
+                    } else {
+                        $class .= ' vistaCajero-table-disponible';
+                        $estadoTexto = 'DISPONIBLE';
+                    }
                     ?>
                     <div class="<?= $class ?>">
                         <h3 class="vistaCajero-table-number">Mesa <?= $mesa['numero'] ?></h3>
@@ -154,9 +156,12 @@
                             <?php if ($estado === 'disponible'): ?>
                                 <button class="vistaCajero-action-btn vistaCajero-btn-view">Asignar Mesa</button>
                             <?php else: ?>
-                                <button class="vistaCajero-action-btn vistaCajero-btn-view" onclick="location.href='<?= $ruta ?>/cajero/cuenta?id=<?= $mesa['id'] ?>'">Ver Cuenta</button>
-                                <button class="vistaCajero-action-btn vistaCajero-btn-close">Cerrar Mesa</button>
-                                <button class="vistaCajero-action-btn vistaCajero-btn-pagado" onclick="marcarPagado(<?= $mesa['id'] ?>)">Pagado</button>
+                                <button class="vistaCajero-action-btn vistaCajero-btn-view"
+                                    onclick="location.href='<?= $ruta ?>/cajero/cuenta?id=<?= $mesa['id'] ?>'">Ver
+                                    Cuenta</button>
+                                <button class="vistaCajero-action-btn vistaCajero-btn-close" onclick="cerrarMesa(<?= $mesa['id'] ?>)">Cerrar Mesa</button>
+                                <button class="vistaCajero-action-btn vistaCajero-btn-pagado"
+                                    onclick="marcarPagado(<?= $mesa['id'] ?>)">Pagado</button>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -172,18 +177,18 @@
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'mesa_id=' + mesaId
             })
-            .then(res => res.text())
-            .then(res => {
-                if (res.trim() === 'ok') {
-                    location.reload();
-                } else {
-                    alert('Error al marcar la mesa como pagada');
-                }
-            });
+                .then(res => res.text())
+                .then(res => {
+                    if (res.trim() === 'ok') {
+                        location.reload();
+                    } else {
+                        alert('Error al marcar la mesa como pagada');
+                    }
+                });
         }
 
         // Ocultar menú hamburguesa si se abre fuera
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             const menu = document.getElementById('logoutMenu');
             if (menu && !e.target.matches('.hamburger')) {
                 menu.style.display = 'none';
@@ -203,6 +208,23 @@
                     }
                 });
         }, 10000);
+
+        function cerrarMesa(mesaId) {
+            fetch('<?= $ruta ?>/cajero/cerrarMesa', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'mesa_id=' + mesaId
+            })
+                .then(res => res.text())
+                .then(res => {
+                    if (res.trim() === 'ok') {
+                        location.reload();
+                    } else {
+                        alert('Error al cerrar la mesa');
+                    }
+                });
+        }
     </script>
 </body>
+
 </html>

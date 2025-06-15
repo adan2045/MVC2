@@ -37,7 +37,7 @@ class MesaModel
     ";
     return $this->db->query($sql, [], true);
 }
-
+    
     public function existeNumero($numero)
     {
         $sql = "SELECT COUNT(*) FROM mesas WHERE numero = ?";
@@ -91,5 +91,22 @@ class MesaModel
     $db = \DataBase::getInstance()->getConnection();
     $stmt = $db->prepare("UPDATE mesas SET estado = ? WHERE id = ?");
     return $stmt->execute([$estado, $id]);
+}
+
+// ⬇️ Pegá justo aquí
+public function cerrarMesaYSolicitarCuenta($mesaId)
+{
+    try {
+        $db = \DataBase::getInstance()->getConnection();
+        $stmt = $db->prepare("UPDATE mesas SET estado = 'cuenta_solicitada' WHERE id = ?");
+        $stmt->execute([$mesaId]);
+
+        // 🧾 Aquí podrías imprimir el ticket si lo necesitás más adelante
+        // echo "<script>window.print();</script>";
+
+        return true;
+    } catch (\Exception $e) {
+        return false;
+    }
 }
 }

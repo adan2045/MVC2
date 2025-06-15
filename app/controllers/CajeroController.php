@@ -158,6 +158,25 @@ public function actionCuenta()
         'ruta' => \App::baseUrl(), // 👈 AGREGADO para que los botones funcionen
     ]);
 }
+public function actionCerrarMesa()
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $mesaId = $_POST['mesa_id'] ?? null;
+
+        if ($mesaId) {
+            $mesaModel = new \app\models\MesaModel();
+            $mesaModel->cerrarMesaYSolicitarCuenta($mesaId); // Usa el nuevo método
+            echo 'ok';
+
+            // 🧾 Podés imprimir el ticket acá en el futuro:
+            // echo "<script>window.print();</script>";
+
+        } else {
+            http_response_code(400);
+            echo 'Faltan datos';
+        }
+    }
+}
     public function actionMarcarPagado()
 {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
