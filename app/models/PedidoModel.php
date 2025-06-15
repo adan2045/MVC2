@@ -73,7 +73,35 @@ class PedidoModel
         ':id' => $id
     ]);
 }
+public function obtenerDetalleCuentaPorMesa($mesaId)
+{
+    $db = \DataBase::getInstance()->getConnection();
 
+    $sql = "
+        SELECT p.id AS pedido_id, pr.nombre AS nombre, pr.nombre AS producto, pr.descripcion, pd.cantidad, pr.precio, (pd.cantidad * pr.precio) AS subtotal
+        FROM pedidos p
+        JOIN pedido_detalle pd ON p.id = pd.pedido_id
+        JOIN productos pr ON pd.producto_id = pr.id
+        WHERE p.mesa_id = ? AND DATE(p.fecha) = CURDATE() AND p.cerrado = 0
+    ";
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$mesaId]);
+    $productos = $stmt->fetchAll();
+
+    $total = 0;
+    foreach ($productos as $p) {
+        $total += $p['subtotal'];
+    }
+
+    $mesa = $db->prepare("SELECT * FROM mesas WHERE id = ?");
+    $mesa->execute([$mesaId]);
+
+    return [
+        'mesa' => $mesa->fetch(),
+        'productos' => $productos,
+        'total' => $total
+    ];
+}
 public function actualizarEstadoProducto($detalleId, $estado)
 {
     $stmt = $this->db->prepare("UPDATE pedido_detalle SET estado = :estado WHERE id = :id");
@@ -107,35 +135,5 @@ public function obtenerPedidosActivosPorMesa($mesaId)
     return $pedidos;
 }
 
-public function obtenerDetalleCuentaPorMesa($mesaId)
-{
-    $db = \DataBase::getInstance()->getConnection();
 
-    // Detalles de productos del pedido activo del día
-    $sql = "
-        SELECT p.id AS pedido_id, pr.nombre AS producto, pd.cantidad, pr.precio, (pd.cantidad * pr.precio) AS subtotal
-        FROM pedidos p
-        JOIN pedido_detalle pd ON p.id = pd.pedido_id
-        JOIN productos pr ON pd.producto_id = pr.id
-        WHERE p.mesa_id = ? AND DATE(p.fecha) = CURDATE() AND p.cerrado = 0
-    ";
-    $stmt = $db->prepare($sql);
-    $stmt->execute([$mesaId]);
-    $productos = $stmt->fetchAll();
-
-    $total = 0;
-    foreach ($productos as $p) {
-        $total += $p['subtotal'];
-    }
-
-    // Datos de la mesa
-    $mesa = $db->prepare("SELECT * FROM mesas WHERE id = ?");
-    $mesa->execute([$mesaId]);
-
-    return [
-        'mesa' => $mesa->fetch(),
-        'productos' => $productos,
-        'total' => $total
-    ];
-}
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <?= $head ?>
     <title><?= $title ?? 'Detalle de Cuenta' ?></title>
@@ -34,7 +35,7 @@
             background-color: white;
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         .cuenta-bill-header {
@@ -92,6 +93,7 @@
         }
     </style>
 </head>
+
 <body class="cuenta-body">
     <header class="cuenta-header">
         <div class="cuenta-terminal-title">Detalle de Cuenta - Mesa <?= $mesa['numero'] ?></div>
@@ -113,10 +115,15 @@
                 <tbody>
                     <?php foreach ($productos as $prod): ?>
                         <tr>
-                            <td><?= $prod['nombre'] ?><br><small><?= $prod['descripcion'] ?></small></td>
-                            <td><?= $prod['cantidad'] ?></td>
-                            <td>$<?= number_format($prod['precio'], 2, ',', '.') ?></td>
-                            <td>$<?= number_format($prod['subtotal'], 2, ',', '.') ?></td>
+                            <td>
+                                <?= isset($prod['nombre']) ? htmlspecialchars($prod['nombre']) : 'Producto desconocido' ?>
+                                <br>
+                                <small><?= isset($prod['descripcion']) ? htmlspecialchars($prod['descripcion']) : '' ?></small>
+                            </td>
+                            <td><?= isset($prod['cantidad']) ? $prod['cantidad'] : 0 ?></td>
+                            <td>$<?= isset($prod['precio']) ? number_format($prod['precio'], 2, ',', '.') : '0,00' ?></td>
+                            <td>$<?= isset($prod['subtotal']) ? number_format($prod['subtotal'], 2, ',', '.') : '0,00' ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -135,25 +142,26 @@
     </main>
 
     <script>
-    function solicitarCuenta(mesaId) {
-        fetch('<?= $ruta ?>/mesa/solicitarCuenta', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'mesa_id=' + mesaId
-        })
-        .then(res => res.text())
-        .then(res => {
-            if (res.trim() === 'ok') {
-                // 🚧 Línea para imprimir en el futuro:
-                // window.print();
+        function solicitarCuenta(mesaId) {
+            fetch('<?= $ruta ?>/mesa/solicitarCuenta', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'mesa_id=' + mesaId
+            })
+                .then(res => res.text())
+                .then(res => {
+                    if (res.trim() === 'ok') {
+                        // 🚧 Línea para imprimir en el futuro:
+                        // window.print();
 
-                // Redirigir al cajero
-                window.location.href = '<?= $ruta ?>/cajero/vistaCajero';
-            } else {
-                alert('Error al solicitar la cuenta');
-            }
-        });
-    }
+                        // Redirigir al cajero
+                        window.location.href = '<?= $ruta ?>/cajero/vistaCajero';
+                    } else {
+                        alert('Error al solicitar la cuenta');
+                    }
+                });
+        }
     </script>
 </body>
+
 </html>
