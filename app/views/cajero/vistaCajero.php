@@ -159,7 +159,13 @@
                                 <button class="vistaCajero-action-btn vistaCajero-btn-view"
                                     onclick="location.href='<?= $ruta ?>/cajero/cuenta?id=<?= $mesa['id'] ?>'">Ver
                                     Cuenta</button>
-                                <button class="vistaCajero-action-btn vistaCajero-btn-close" onclick="cerrarMesa(<?= $mesa['id'] ?>)">Cerrar Mesa</button>
+                                <?php if ($mesa['total'] > 0): ?>
+                                    <button class="vistaCajero-action-btn vistaCajero-btn-close"
+                                        onclick="cerrarMesa(<?= $mesa['id'] ?>)">Cerrar Mesa</button>
+                                <?php else: ?>
+                                    <button class="vistaCajero-action-btn vistaCajero-btn-close" disabled
+                                        style="background-color: gray; cursor: not-allowed;">Sin Consumo</button>
+                                <?php endif; ?>
                                 <button class="vistaCajero-action-btn vistaCajero-btn-pagado"
                                     onclick="marcarPagado(<?= $mesa['id'] ?>)">Pagado</button>
                             <?php endif; ?>
@@ -224,6 +230,22 @@
                     }
                 });
         }
+        function cerrarMesa(mesaId) {
+    fetch('<?= $ruta ?>/mesa/solicitarCuenta', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'mesa_id=' + mesaId
+    })
+    .then(res => res.text())
+    .then(res => {
+        if (res.trim() === 'ok') {
+            // window.print(); // Descomentá si querés imprimir
+            window.location.href = '<?= $ruta ?>/cajero/vistaCajero';
+        } else {
+            alert('Error al cerrar la mesa');
+        }
+    });
+}
     </script>
 </body>
 
