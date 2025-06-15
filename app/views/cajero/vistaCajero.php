@@ -3,8 +3,7 @@
 <head>
     <?= $head ?>
     <title><?= $title ?? 'Terminal Cajero' ?></title>
-    <link rel="stylesheet" href="/public/css/crud.css">
-    <link rel="stylesheet" href="/public/css/listado.css">
+
     <style>
         .vistaCajero-user-info {
             display: flex;
@@ -118,9 +117,7 @@
     <header><?= $nav ?></header>
 
     <div class="vistaCajero-toggle">
-        <!-- Este botón ya está activo porque estás en vistaCajero -->
         <a href="<?= $ruta ?>/cajero/vistaCajero" class="active">Estado de Mesas</a>
-        <!-- Redirige a listado de pedidos -->
         <a href="<?= $ruta ?>/pedido/listado">Pedidos en Curso</a>
     </div>
 
@@ -157,7 +154,7 @@
                             <?php if ($estado === 'disponible'): ?>
                                 <button class="vistaCajero-action-btn vistaCajero-btn-view">Asignar Mesa</button>
                             <?php else: ?>
-                                <button class="vistaCajero-action-btn vistaCajero-btn-view">Ver Cuenta</button>
+                                <button class="vistaCajero-action-btn vistaCajero-btn-view" onclick="location.href='<?= $ruta ?>/cajero/cuenta?id=<?= $mesa['id'] ?>'">Ver Cuenta</button>
                                 <button class="vistaCajero-action-btn vistaCajero-btn-close">Cerrar Mesa</button>
                                 <button class="vistaCajero-action-btn vistaCajero-btn-pagado" onclick="marcarPagado(<?= $mesa['id'] ?>)">Pagado</button>
                             <?php endif; ?>
@@ -185,6 +182,7 @@
             });
         }
 
+        // Ocultar menú hamburguesa si se abre fuera
         document.addEventListener('click', function(e) {
             const menu = document.getElementById('logoutMenu');
             if (menu && !e.target.matches('.hamburger')) {
@@ -192,7 +190,7 @@
             }
         });
 
-        // 🔁 Recarga automática de mesas cada 10 segundos
+        // 🔁 Recarga automática cada 10 segundos
         setInterval(() => {
             fetch(location.href)
                 .then(res => res.text())
