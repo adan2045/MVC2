@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,15 +6,11 @@
     <link rel="stylesheet" href="/public/css/crud.css">
     <link rel="stylesheet" href="/public/css/listado.css">
     <style>
-        
-        
         .vistaCajero-user-info {
             display: flex;
             align-items: center;
             gap: 0px;
         }
-
-    
 
         .vistaCajero-toggle {
             display: flex;
@@ -23,12 +18,15 @@
             margin: 20px 0px 20px 20px;
         }
 
-        .vistaCajero-toggle button {
+        .vistaCajero-toggle a {
             flex: 1;
             padding: 10px;
-            border: none;
-            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
             font-size: 1rem;
+            border: none;
+            background-color: #eee;
+            color: #000;
         }
 
         .vistaCajero-toggle .active {
@@ -120,8 +118,10 @@
     <header><?= $nav ?></header>
 
     <div class="vistaCajero-toggle">
-        <button class="active" onclick="mostrar('mesas')">Estado de Mesas</button>
-        <button onclick="mostrar('pedidos')">Pedidos en Curso</button>
+        <!-- Este botón ya está activo porque estás en vistaCajero -->
+        <a href="<?= $ruta ?>/cajero/vistaCajero" class="active">Estado de Mesas</a>
+        <!-- Redirige a listado de pedidos -->
+        <a href="<?= $ruta ?>/pedido/listado">Pedidos en Curso</a>
     </div>
 
     <main class="vistaCajero-main">
@@ -166,21 +166,9 @@
                 <?php endforeach; ?>
             </div>
         </div>
-        <div id="vistaPedidos" style="display:none; padding:20px;">
-            <p>Aquí irán los pedidos en curso.</p>
-        </div>
     </main>
 
     <script>
-        function mostrar(vista) {
-            document.getElementById('vistaMesas').style.display = vista === 'mesas' ? 'block' : 'none';
-            document.getElementById('vistaPedidos').style.display = vista === 'pedidos' ? 'block' : 'none';
-            const buttons = document.querySelectorAll('.vistaCajero-toggle button');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            if (vista === 'mesas') buttons[0].classList.add('active');
-            else buttons[1].classList.add('active');
-        }
-
         function marcarPagado(mesaId) {
             fetch('<?= $ruta ?>/cajero/pagarMesa', {
                 method: 'POST',
@@ -199,7 +187,7 @@
 
         document.addEventListener('click', function(e) {
             const menu = document.getElementById('logoutMenu');
-            if (!e.target.matches('.hamburger')) {
+            if (menu && !e.target.matches('.hamburger')) {
                 menu.style.display = 'none';
             }
         });

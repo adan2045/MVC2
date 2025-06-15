@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <?= $head ?>
     <title><?= $title ?? 'Listado de Pedidos' ?></title>
@@ -16,6 +17,7 @@
             cursor: pointer;
         }
 
+
         .estado-pendiente {
             background-color: #ffc107;
             color: #000;
@@ -29,7 +31,40 @@
             font-weight: bold;
             cursor: default;
         }
+        .vistaCajero-toggle {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0px 20px 20px;
+        }
 
+        .vistaCajero-toggle button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .vistaCajero-action-buttons {
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .vistaCajero-action-btn {
+            flex: 1;
+            padding: 6px 10px;
+            font-size: 0.85rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .vistaCajero-toggle .active {
+            background-color: black;
+            color: white;
+        }
         .estado-completado {
             background-color: #28a745;
             color: #fff;
@@ -44,6 +79,7 @@
         .producto-subfila td {
             padding-left: 3rem;
         }
+        
     </style>
 </head>
 <script>
@@ -51,16 +87,17 @@
         location.reload();
     }, 5000); // 5000 milisegundos = 5 segundos
 </script>
+
 <body>
+ <header><?= $nav ?></header>
 
+    <div class="vistaCajero-toggle">
+        <button class="active" onclick="mostrar('mesas')">Estado de Mesas</button>
+        
+        <button onclick="mostrar('pedidos')">Pedidos en Curso</button>
+    </div>
 
-<main>
-    <div class="listado-container">
-        <div class="listado-header">
-            <h1>Pedidos del Día</h1>
-            <p>Sistema de Gestión</p>
-        </div>
-
+    <main>
         <div class="listado-tabla-wrapper">
             <table class="listado-tabla">
                 <thead>
@@ -79,14 +116,16 @@
                     $ultimoPedidoId = null;
                     foreach ($pedidos as $pedido):
                         $nuevoPedido = $pedido['pedido_id'] !== $ultimoPedidoId;
-                    ?>
+                        ?>
                         <tr>
                             <?php if ($nuevoPedido): ?>
                                 <td><?= $pedido['pedido_id'] ?></td>
                                 <td>Mesa <?= $pedido['mesa_numero'] ?></td>
-                                <td><?= $pedido['mozo_nombre'] ?> <?= $pedido['mozo_apellido'] ?></td>
+                                <td><?= $pedido['mozo_nombre'] ?>         <?= $pedido['mozo_apellido'] ?></td>
                             <?php else: ?>
-                                <td></td><td></td><td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             <?php endif; ?>
 
                             <td><?= $pedido['producto_nombre'] ?></td>
@@ -103,49 +142,40 @@
                                     <?php foreach (['pendiente', 'en_proceso', 'completado'] as $estado): ?>
                                         <button
                                             class="estado-btn <?= $pedido['detalle_estado'] === $estado ? 'estado-' . $estado : '' ?>"
-                                            data-id="<?= $pedido['detalle_id'] ?>"
-                                            data-estado="<?= $estado ?>"
-                                        >
+                                            data-id="<?= $pedido['detalle_id'] ?>" data-estado="<?= $estado ?>">
                                             <?= ucfirst(str_replace('_', ' ', $estado)) ?>
                                         </button>
                                     <?php endforeach; ?>
                                 </div>
                             </td>
                         </tr>
-                    <?php $ultimoPedidoId = $pedido['pedido_id']; endforeach; ?>
+                        <?php $ultimoPedidoId = $pedido['pedido_id']; endforeach; ?>
                 </tbody>
             </table>
         </div>
 
         <script>
-        document.querySelectorAll('.estado-btn').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const detalleId = this.dataset.id;
-                const nuevoEstado = this.dataset.estado;
+            document.querySelectorAll('.estado-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const detalleId = this.dataset.id;
+                    const nuevoEstado = this.dataset.estado;
 
-                fetch('<?= $ruta ?>/pedido/actualizarEstadoProducto', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: `id=${detalleId}&estado=${nuevoEstado}`
-                })
-                .then(res => res.text())
-                .then(res => {
-                    if (res.trim() === 'ok') {
-                        location.reload();
-                    } else {
-                        alert('Error al actualizar el estado');
-                    }
+                    fetch('<?= $ruta ?>/pedido/actualizarEstadoProducto', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `id=${detalleId}&estado=${nuevoEstado}`
+                    })
+                        .then(res => res.text())
+                        .then(res => {
+                            if (res.trim() === 'ok') {
+                                location.reload();
+                            } else {
+                                alert('Error al actualizar el estado');
+                            }
+                        });
                 });
             });
-        });
         </script>
-
-        <div class="listado-footer">
-            <a href="<?= $ruta ?>/admin/gestion">Volver al Panel</a>
-        </div>
-    </div>
-</main>
-
-
+    </main>
 </body>
 </html>
