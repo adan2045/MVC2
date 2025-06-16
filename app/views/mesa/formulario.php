@@ -23,24 +23,7 @@
                         <input type="number" name="numero" class="form-control" value="<?= $mesa['numero'] ?? '' ?>" required>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Código QR</label>
-                        <input type="text" name="qr_code" class="form-control" value="<?= $mesa['qr_code'] ?? '' ?>">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Link QR</label>
-                        <input type="text" name="link_qr" class="form-control" value="<?= $mesa['link_qr'] ?? '' ?>">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Estado</label>
-                        <select name="estado" class="form-control">
-                            <option value="libre" <?= (isset($mesa['estado']) && $mesa['estado'] == 'libre') ? 'selected' : '' ?>>Libre</option>
-                            <option value="ocupada" <?= (isset($mesa['estado']) && $mesa['estado'] == 'ocupada') ? 'selected' : '' ?>>Ocupada</option>
-                            <option value="cuenta_solicitada" <?= (isset($mesa['estado']) && $mesa['estado'] == 'cuenta_solicitada') ? 'selected' : '' ?>>Cuenta Solicitada</option>
-                        </select>
-                    </div>
+                    
                 </div>
 
                 <button type="submit" class="btn"><?= isset($mesa) ? 'Actualizar' : 'Guardar' ?> Mesa</button>

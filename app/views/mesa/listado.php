@@ -22,22 +22,34 @@
                 <table class="mesa-tabla">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            
                             <th>Número</th>
-                            <th>QR Code</th>
+                            <th>QR</th>
                             <th>Link QR</th>
-                            <th>Estado</th>
+                            
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($mesas as $mesa): ?>
                             <tr>
-                                <td><?= $mesa['id'] ?></td>
+                                
                                 <td><?= $mesa['numero'] ?></td>
-                                <td><?= $mesa['qr_code'] ?? '-' ?></td>
-                                <td><?= $mesa['link_qr'] ?? '-' ?></td>
-                                <td><?= $mesa['estado'] ?></td>
+                                <td>
+                                    <?php if (!empty($mesa['qr_code'])): ?>
+                                        <img src="<?= App::baseUrl() . str_replace('/public', '', $mesa['qr_code']) ?>" alt="QR Mesa <?= $mesa['numero'] ?>" width="60">
+                                    <?php else: ?>
+                                        Sin QR
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if (!empty($mesa['link_qr'])): ?>
+                                        <a href="<?= $mesa['link_qr'] ?>" target="_blank"><?= $mesa['link_qr'] ?></a>
+                                    <?php else: ?>
+                                        -
+                                    <?php endif; ?>
+                                </td>
+                                
                                 <td>
                                     <div class="mesa-acciones">
                                         <a href="<?=$ruta?>/mesa/modificar?id=<?= $mesa['id'] ?>" class="mesa-btn-mini">Modificar</a>
