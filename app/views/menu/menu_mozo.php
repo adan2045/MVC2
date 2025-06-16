@@ -22,7 +22,7 @@
                     <label>Mesa:
                         <select id="mesaSelect" onchange="resetearVista()">
                             <?php foreach ($mesas as $mesa): ?>
-                                <option value="<?= $mesa['id'] ?>">Mesa <?= $mesa['numero'] ?></option>
+                                <option value="<?= $mesa['numero'] ?>">Mesa <?= $mesa['numero'] ?></option>
                             <?php endforeach; ?>
                         </select>
                     </label>
@@ -144,16 +144,16 @@
             });
         });
 
-        function cambiarEstadoMesa(estado) {
-            const mesaId = document.getElementById('mesaSelect').value;
-            fetch(`<?= \App::baseUrl() ?>/mesa/cambiarEstado?id=${mesaId}&estado=${estado}`)
-                .then(res => res.text())
-                .then(res => {
-                    if (res.trim() !== 'ok') {
-                        alert("Error al cambiar el estado de la mesa");
-                    }
-                });
-        }
+       function cambiarEstadoMesa(estado) {
+    const mesaNumero = document.getElementById('mesaSelect').value;
+    fetch(`<?= \App::baseUrl() ?>/mesa/cambiarEstadoPorNumero?numero=${mesaNumero}&estado=${estado}`)
+        .then(res => res.text())
+        .then(res => {
+            if (res.trim() !== 'ok') {
+                alert("Error al cambiar el estado de la mesa");
+            }
+        });
+}
     </script>
 </body>
 </html>

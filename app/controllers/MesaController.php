@@ -165,6 +165,23 @@ class MesaController extends Controller
         echo "Error de parámetros";
     }
 }
+    public function actionCambiarEstadoPorNumero()
+{
+    $numero = $_GET['numero'] ?? null;
+    $estado = $_GET['estado'] ?? null;
+
+    if ($numero && $estado) {
+        $mesaModel = new \app\models\MesaModel();
+        $mesa = $mesaModel->obtenerPorNumero($numero);
+        if ($mesa) {
+            $mesaModel->cambiarEstado($mesa['id'], $estado);
+            echo "ok";
+            return;
+        }
+    }
+    http_response_code(400);
+    echo "Error de parámetros";
+}
 
 
     public function actionEliminar()

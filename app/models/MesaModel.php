@@ -18,6 +18,13 @@ class MesaModel
         return $this->db->query($sql, [], true);
     }
 
+    public function obtenerPorNumero($numero)
+{
+    $sql = "SELECT * FROM mesas WHERE numero = ?";
+    $resultado = $this->db->query($sql, [$numero], true);
+    return $resultado[0] ?? null;
+}
+
     public function obtenerConTotales()
 {
     $sql = "
@@ -53,8 +60,8 @@ class MesaModel
         $stmt->execute([$numero, $idActual]);
         return $stmt->fetchColumn() > 0;
     }
-
-   public function guardar($qr_code, $estado, $link_qr, $numero)
+// guardar por numero de mesa 
+    public function guardar($qr_code, $estado, $link_qr, $numero)
 {
     // ✅ Incluir la librería con ruta segura
     require_once APP_PATH . 'librerias/php/phpqrcode/phpqrcode.php';
@@ -82,6 +89,44 @@ class MesaModel
     $sql = "INSERT INTO mesas (qr_code, estado, link_qr, numero) VALUES (?, ?, ?, ?)";
     return $this->db->execute($sql, [$rutaPublicaQR, $estado, $linkMesa, $numero]);
 }
+/*crea el qr por id 
+   public function guardar($qr_code, $estado, $link_qr, $numero)
+{
+    // Incluir la librería correctamente
+    require_once APP_PATH . 'librerias/php/phpqrcode/phpqrcode.php';
+
+    // Primero insertamos la mesa sin el QR para obtener su ID
+    $sql = "INSERT INTO mesas (qr_code, estado, link_qr, numero) VALUES ('', ?, '', ?)";
+    $this->db->execute($sql, [$estado, $numero]);
+
+    // Obtener el ID recién insertado
+    $db = \DataBase::getInstance()->getConnection();
+    $idInsertado = $db->lastInsertId();
+
+    // Generar el link usando el ID
+    $linkMesa = "http://localhost/MVC2/menu/menu?mesa=" . $idInsertado;
+
+    // Ruta donde guardar el QR
+    $rutaCarpeta = APP_PATH . "../public/img/imagenes_qr/";
+    if (!file_exists($rutaCarpeta)) {
+        mkdir($rutaCarpeta, 0777, true);
+    }
+
+    $nombreArchivo = 'mesa_' . $idInsertado . ".png";
+    $rutaQR = $rutaCarpeta . $nombreArchivo;
+
+    // Generar QR
+    \QRcode::png($linkMesa, $rutaQR, QR_ECLEVEL_L, 5);
+
+    // Ruta pública del QR
+    $rutaPublicaQR = "/public/img/imagenes_qr/" . $nombreArchivo;
+
+    // Actualizar la mesa insertada con los valores de QR y link
+    $updateSql = "UPDATE mesas SET qr_code = ?, link_qr = ? WHERE id = ?";
+    $this->db->execute($updateSql, [$rutaPublicaQR, $linkMesa, $idInsertado]);
+
+    return true;
+}*/
 
     public function obtenerPorId($id)
     {
