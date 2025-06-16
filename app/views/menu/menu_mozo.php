@@ -1,10 +1,60 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <?= $head ?>
     <title><?= $title ?? 'Menú Mozo' ?></title>
-   
+
 </head>
+<style>
+    .menu-btn-azul {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .menu-btn-azul:hover {
+        background-color: #0056b3;
+    }
+
+    .menu-btn-amarillo {
+        background-color:rgb(53, 158, 58);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .menu-btn-amarillo:hover {
+        background-color:rgb(23, 123, 20);
+    }
+
+    select#mesaSelect {
+        padding: 0.5rem;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-weight: bold;
+        background-color: #f8f9fa;
+        color: #333;
+        margin-left: 10px;
+    }
+
+    select#mesaSelect:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
+    }
+</style>
+
 <body class="menu-terminal-body">
     <header class="menu-header">
         <div class="menu-terminal-info">
@@ -18,7 +68,7 @@
         <div class="menu-mesa-activa">
             <div class="menu-mesa-header">
                 <div>
-                    <h2>Enviar pedido</h2>
+                    
                     <label>Mesa:
                         <select id="mesaSelect" onchange="resetearVista()">
                             <?php foreach ($mesas as $mesa): ?>
@@ -28,8 +78,8 @@
                     </label>
                 </div>
                 <div class="menu-header-buttons">
-                    <button onclick="cambiarEstadoMesa('ocupada')">Mesa Ocupada</button>
-                    <button onclick="cambiarEstadoMesa('cuenta_solicitada')">Pedir Cuenta</button>
+                    <button class="menu-btn-amarillo" onclick="cambiarEstadoMesa('ocupada')">Mesa Ocupada</button>
+                    <button class="menu-btn-azul" onclick="cambiarEstadoMesa('cuenta_solicitada')">Pedir Cuenta</button>
                 </div>
             </div>
 
@@ -133,27 +183,28 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ mesa_id: mesaId, productos })
             })
-            .then(res => res.text())
-            .then(res => {
-                if (res.trim() === 'ok') {
-                    cambiarEstadoMesa('ocupada');
-                    resetearVista();
-                } else {
-                    alert('Error al enviar pedido');
-                }
-            });
+                .then(res => res.text())
+                .then(res => {
+                    if (res.trim() === 'ok') {
+                        cambiarEstadoMesa('ocupada');
+                        resetearVista();
+                    } else {
+                        alert('Error al enviar pedido');
+                    }
+                });
         });
 
-       function cambiarEstadoMesa(estado) {
-    const mesaNumero = document.getElementById('mesaSelect').value;
-    fetch(`<?= \App::baseUrl() ?>/mesa/cambiarEstadoPorNumero?numero=${mesaNumero}&estado=${estado}`)
-        .then(res => res.text())
-        .then(res => {
-            if (res.trim() !== 'ok') {
-                alert("Error al cambiar el estado de la mesa");
-            }
-        });
-}
+        function cambiarEstadoMesa(estado) {
+            const mesaNumero = document.getElementById('mesaSelect').value;
+            fetch(`<?= \App::baseUrl() ?>/mesa/cambiarEstadoPorNumero?numero=${mesaNumero}&estado=${estado}`)
+                .then(res => res.text())
+                .then(res => {
+                    if (res.trim() !== 'ok') {
+                        alert("Error al cambiar el estado de la mesa");
+                    }
+                });
+        }
     </script>
 </body>
+
 </html>

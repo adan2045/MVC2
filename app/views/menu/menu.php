@@ -129,6 +129,20 @@ $mesaId = $_GET['mesa'] ?? null;
     min-width: 30px;
     text-align: center;
 }
+.menu-btn-negro {
+    background-color:#007bff;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+.menu-btn-negro:hover {
+    background-color: #333;
+}
 
 .menu-mesa-footer {
     background: #f8f9fa;
@@ -179,7 +193,7 @@ $mesaId = $_GET['mesa'] ?? null;
                     <h2>Mesa <?= $mesaId ?></h2>
                 </div>
                 <div class="menu-header-buttons">
-                    <button onclick="cambiarEstadoMesa('cuenta_solicitada')">Pedir Cuenta</button>
+                    <button class="menu-btn-negro" onclick="cambiarEstadoMesa('cuenta_solicitada')">Pedir Cuenta</button>
                 </div>
             </div>
 
