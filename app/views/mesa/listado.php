@@ -54,6 +54,7 @@
                                     <div class="mesa-acciones">
                                         <a href="<?=$ruta?>/mesa/modificar?id=<?= $mesa['id'] ?>" class="mesa-btn-mini">Modificar</a>
                                         <a href="<?=$ruta?>/mesa/eliminar?id=<?= $mesa['id'] ?>" class="mesa-btn-mini mesa-btn-eliminar" onclick="return confirm('¿Eliminar esta mesa?');">Eliminar</a>
+                                        <a href="<?= App::baseUrl() . str_replace('/public', '', $mesa['qr_code']) ?>" download class="mesa-btn-mini mesa-btn-descargar">Descargar QR</a>
                                     </div>
                                 </td>
                             </tr>
