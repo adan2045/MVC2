@@ -150,10 +150,18 @@ class MesaModel
 }
 
     public function eliminar($id)
-    {
-        $sql = "DELETE FROM mesas WHERE id = ?";
-        return $this->db->execute($sql, [$id]);
+{
+    try {
+        // Usamos directamente la clase DataBase que lanza PDOException
+        return \DataBase::execute("DELETE FROM mesas WHERE id = ?", [$id]);
+    } catch (\PDOException $e) {
+        if ($e->getCode() === '23000') {
+            throw new \Exception("❌ No se puede eliminar la mesa porque tiene pedidos relacionados.");
+        } else {
+            throw new \Exception("⚠️ Error inesperado al eliminar la mesa: " . $e->getMessage());
+        }
     }
+}
     public function actualizarEstado($id, $estado)
 {
     $db = \DataBase::getInstance()->getConnection();

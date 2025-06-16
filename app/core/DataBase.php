@@ -1,4 +1,3 @@
-
 <?php
 /**
  * Conexión con la Base de Datos utilizando PDO
@@ -6,15 +5,15 @@
 class DataBase
 {
     private static $host = "localhost";
-    private static $dbname = "bar_db";  // Quité las comillas simples que estaban causando error
+    private static $dbname = "bar_db";
     private static $dbuser = "root";
     private static $dbpass = "";
 
-    private static $instance = null;    // Nueva propiedad para Singleton
-    private static $dbh = null;         // Database handler
+    private static $instance = null;
+    private static $dbh = null;
     private static $error;
 
-    // Método Singleton para obtener instancia
+    // Singleton
     public static function getInstance()
     {
         if (self::$instance === null) {
@@ -23,7 +22,7 @@ class DataBase
         return self::$instance;
     }
 
-    // Obtener una instancia de la conexión PDO
+    // Conexión PDO
     private static function connection()
     {
         if (self::$dbh === null) {
@@ -45,39 +44,33 @@ class DataBase
         return self::$dbh;
     }
 
-    // Método para obtener la conexión directamente (nuevo)
     public function getConnection()
     {
         return self::connection();
     }
 
-    // Ejecutar una consulta con parámetros
     public static function query($sql, $params = [], $asArray = false)
-{
-    $statement = self::prepareAndExecute($sql, $params);
-    return $statement->fetchAll($asArray ? PDO::FETCH_ASSOC : PDO::FETCH_OBJ);
-}
+    {
+        $statement = self::prepareAndExecute($sql, $params);
+        return $statement->fetchAll($asArray ? PDO::FETCH_ASSOC : PDO::FETCH_OBJ);
+    }
 
-    // Ejecutar un SQL que no requiere obtener resultados
     public static function execute($sql, $params = [])
     {
         return self::prepareAndExecute($sql, $params)->rowCount();
     }
 
-    // Obtener el número de registros afectados
     public static function rowCount($sql, $params = [])
     {
         return self::prepareAndExecute($sql, $params)->rowCount();
     }
 
-    // Obtener nombres de columnas de una tabla
     public static function getColumnsNames($table)
     {
         $sql = "SELECT column_name FROM information_schema.columns WHERE table_name = :table";
         return self::query($sql, ['table' => $table]);
     }
 
-    // Ejecutar una transacción
     public static function ejecutar($sql)
     {
         $dbh = self::connection();
@@ -93,15 +86,11 @@ class DataBase
         }
     }
 
-    // Preparar y ejecutar una consulta con manejo de excepciones
+    // ✅ Devuelve directamente la excepción original para manejar errores específicos como clave foránea
     private static function prepareAndExecute($sql, $params = [])
     {
         $statement = self::connection()->prepare($sql);
-        try {
-            $statement->execute($params);
-        } catch (PDOException $e) {
-            throw new Exception("Error en la consulta: " . $e->getMessage());
-        }
+        $statement->execute($params); // sin try-catch para permitir manejo personalizado
         return $statement;
     }
 }

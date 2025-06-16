@@ -185,17 +185,26 @@ class MesaController extends Controller
 
 
     public function actionEliminar()
-    {
-        static::path();
-        SesionController::redirigirSiNoAutenticado();
-        $id = $_GET['id'] ?? null;
+{
+    static::path();
+    SesionController::redirigirSiNoAutenticado();
+    $id = $_GET['id'] ?? null;
 
-        if ($id) {
-            $modelo = new MesaModel();
+    if ($id) {
+        $modelo = new MesaModel();
+        try {
             $modelo->eliminar($id);
+            echo "<p style='color: green; font-weight: bold;'>✅ Mesa eliminada correctamente.</p>";
+        } catch (\Exception $e) {
+            echo "<p style='color: red; font-weight: bold;'>❌ {$e->getMessage()}</p>";
         }
 
-        header('Location: ' . App::baseUrl() . '/mesa/listado');
+        echo "<script>setTimeout(() => window.location.href = '" . App::baseUrl() . "/mesa/listado', 2500);</script>";
         exit;
     }
+
+    // En caso de que no haya ID válido
+    header('Location: ' . App::baseUrl() . '/mesa/listado');
+    exit;
+}
 }
