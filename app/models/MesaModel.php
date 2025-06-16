@@ -54,11 +54,34 @@ class MesaModel
         return $stmt->fetchColumn() > 0;
     }
 
-    public function guardar($qr_code, $estado, $link_qr, $numero)
-    {
-        $sql = "INSERT INTO mesas (qr_code, estado, link_qr, numero) VALUES (?, ?, ?, ?)";
-        return $this->db->execute($sql, [$qr_code, $estado, $link_qr, $numero]);
+   public function guardar($qr_code, $estado, $link_qr, $numero)
+{
+    // ✅ Incluir la librería con ruta segura
+    require_once APP_PATH . 'librerias/php/phpqrcode/phpqrcode.php';
+
+    // Generar el link personalizado para la mesa
+    $linkMesa = "http://localhost/MVC2/menu/menu?mesa=" . $numero;
+
+    // Ruta absoluta donde guardar la imagen
+    $rutaCarpeta = APP_PATH . "../public/img/imagenes_qr/";
+    $nombreArchivo = $numero . ".png";
+    $rutaQR = $rutaCarpeta . $nombreArchivo;
+
+    // Crear carpeta si no existe
+    if (!file_exists($rutaCarpeta)) {
+        mkdir($rutaCarpeta, 0777, true);
     }
+
+    // Generar el QR
+    \QRcode::png($linkMesa, $rutaQR, QR_ECLEVEL_L, 5);
+
+    // Ruta pública para mostrar desde el navegador
+    $rutaPublicaQR = "/public/img/imagenes_qr/" . $nombreArchivo;
+
+    // Insertar en la base de datos
+    $sql = "INSERT INTO mesas (qr_code, estado, link_qr, numero) VALUES (?, ?, ?, ?)";
+    return $this->db->execute($sql, [$rutaPublicaQR, $estado, $linkMesa, $numero]);
+}
 
     public function obtenerPorId($id)
     {
