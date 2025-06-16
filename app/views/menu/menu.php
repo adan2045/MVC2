@@ -10,7 +10,158 @@ $mesaId = $_GET['mesa'] ?? null;
 <head>
     <?= $head ?>
     <title><?= $title ?? 'Menú Cliente' ?></title>
-    <link rel="stylesheet" href="/public/css/listado.css">
+   <style>* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.menu-terminal-body {
+    background-color: #f5f5f5;
+    padding-bottom: 2rem;
+}
+
+.menu-header {
+    background-color: #1a1a1a;
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.menu-terminal-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.menu-terminal-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.menu-main {
+    margin-top: 80px;
+    padding: 2rem;
+}
+
+.menu-mesa-activa {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.menu-mesa-header {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff3333 100%);
+    color: white;
+    padding: 1rem;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-menu-list {
+    padding: 1rem;
+}
+
+.menu-menu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.menu-menu-item:last-child {
+    border-bottom: none;
+}
+
+.menu-item-info {
+    flex: 1;
+}
+
+.menu-item-name {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.menu-item-description {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.menu-item-price {
+    color: #333;
+    font-weight: bold;
+    margin-right: 1rem;
+}
+
+.menu-quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.menu-quantity-btn {
+    background: #1a1a1a;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-quantity-display {
+    font-weight: bold;
+    min-width: 30px;
+    text-align: center;
+}
+
+.menu-mesa-footer {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0 0 12px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-total-amount {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.menu-order-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.menu-category-title {
+    padding: 1rem;
+    background: #f0f0f0;
+    font-weight: bold;
+    color: #333;
+}
+
+</style>
 </head>
 <body class="menu-terminal-body">
     <header class="menu-header">

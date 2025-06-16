@@ -3,7 +3,7 @@
 <head>
     <?= $head ?>
     <title><?= $title ?? 'Menú Mozo' ?></title>
-    <link rel="stylesheet" href="/public/css/listado.css">
+   
 </head>
 <body class="menu-terminal-body">
     <header class="menu-header">
