@@ -1,9 +1,9 @@
 <?php
 // Para pruebas usamos la Mesa 1 fija
-$mesaId = 1;
+//$mesaId = 1;
 
 // Si más adelante querés que se lea desde la URL (ej: menu.php?mesa=2), descomentá esta línea:
-// $mesaId = $_GET['mesa'] ?? null;
+$mesaId = $_GET['mesa'] ?? null;
 ?>
 <!DOCTYPE html>
 <html lang="es">
