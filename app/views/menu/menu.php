@@ -308,10 +308,10 @@ $mesaId = $_GET['mesa'] ?? null;
         });
 
         function cambiarEstadoMesa(estado) {
-    const mesaId = <?= $mesaId ?>;
-    if (!mesaId) return alert("Mesa no definida");
+    const mesaNumero = <?= $mesaId ?>;
+    if (!mesaNumero) return alert("Mesa no definida");
 
-    fetch('<?= App::baseUrl() ?>/mesa/cambiarEstado?id=' + mesaId + '&estado=' + estado, {
+    fetch('<?= App::baseUrl() ?>/mesa/cambiarEstadoPorNumero?numero=' + mesaNumero + '&estado=' + estado, {
         method: 'GET'
     })
     .then(res => res.text())
@@ -325,6 +325,7 @@ $mesaId = $_GET['mesa'] ?? null;
         console.error("Error AJAX:", err);
         alert("Error de red");
     });
+
 }
     </script>
 </body>
