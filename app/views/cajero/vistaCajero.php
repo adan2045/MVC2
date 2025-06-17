@@ -3,6 +3,7 @@
 
 <head>
     <?= $head ?>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?? 'Terminal Cajero' ?></title>
 
     <style>
@@ -112,6 +113,51 @@
         .vistaCajero-btn-pagado {
             background-color: #27ae60;
         }
+        
+        @media (max-width: 900px) {
+    .vistaCajero-tables-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 10px;
+    }
+    .vistaCajero-table-card {
+        padding: 10px;
+        min-height: 120px;
+    }
+    .vistaCajero-action-btn {
+        font-size: 0.8rem;
+        padding: 5px 8px;
+    }
+}
+
+@media (max-width: 600px) {
+    .vistaCajero-tables-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    .vistaCajero-main {
+        padding: 4px;
+    }
+    .vistaCajero-table-card {
+        padding: 8px;
+        min-height: 90px;
+    }
+    .vistaCajero-table-number {
+        font-size: 1rem;
+    }
+    .vistaCajero-table-state {
+        font-size: 0.9rem;
+    }
+    .vistaCajero-action-buttons {
+        flex-direction: column;
+        gap: 4px;
+    }
+    .vistaCajero-action-btn {
+        font-size: 0.85rem;
+        width: 100%;
+        padding: 7px 0;
+    }
+}
+
     </style>
 </head>
 
