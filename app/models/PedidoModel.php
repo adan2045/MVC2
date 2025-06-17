@@ -44,7 +44,8 @@ class PedidoModel
         SELECT
             p.id AS pedido_id,
             m.numero AS mesa_numero,
-            u.nombre AS mozo_nombre,
+            -- Cambiamos: si el pedido no tiene mozo, muestra 'Cliente'
+            COALESCE(u.nombre, 'Cliente') AS mozo_nombre,
             u.apellido AS mozo_apellido,
             pd.id AS detalle_id,
             pd.estado AS detalle_estado,

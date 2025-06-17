@@ -25,8 +25,8 @@ class PedidoController extends Controller
                 echo 'Faltan datos';
                 return;
             }
-
-            $mozoId = $_SESSION['usuario']['id'] ?? null;
+            
+           $mozoId = $_SESSION['user_id'] ?? null;
             $total = 0;
 
             $productoModel = new \app\models\ProductoModel();
