@@ -125,86 +125,106 @@
     </main>
 
     <script>
-        const totalDisplay = document.querySelector('.menu-total-amount');
+    const totalDisplay = document.querySelector('.menu-total-amount');
 
-        function updateClock() {
-            document.getElementById('timeDisplay').textContent = new Date().toLocaleTimeString();
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
+    function updateClock() {
+        document.getElementById('timeDisplay').textContent = new Date().toLocaleTimeString();
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
 
-        function resetearVista() {
-            document.querySelectorAll('.menu-quantity-display').forEach(el => el.textContent = '0');
-            total = 0;
+    function resetearVista() {
+        document.querySelectorAll('.menu-quantity-display').forEach(el => el.textContent = '0');
+        total = 0;
+        updateTotal();
+    }
+
+    let total = 0;
+    function updateTotal() {
+        total = 0;
+        document.querySelectorAll('.menu-menu-item').forEach(item => {
+            const cantidad = parseInt(item.querySelector('.menu-quantity-display').textContent);
+            const precio = parseFloat(item.dataset.precio);
+            total += cantidad * precio;
+        });
+        totalDisplay.textContent = `Total: $${total.toLocaleString('es-AR')}`;
+    }
+
+    document.querySelectorAll('.menu-quantity-control').forEach(control => {
+        const display = control.querySelector('.menu-quantity-display');
+        const parent = control.closest('.menu-menu-item');
+
+        control.querySelectorAll('.menu-quantity-btn')[1].addEventListener('click', () => {
+            display.textContent = parseInt(display.textContent) + 1;
             updateTotal();
-        }
+        });
 
-        let total = 0;
-        function updateTotal() {
-            total = 0;
-            document.querySelectorAll('.menu-menu-item').forEach(item => {
-                const cantidad = parseInt(item.querySelector('.menu-quantity-display').textContent);
-                const precio = parseFloat(item.dataset.precio);
-                total += cantidad * precio;
-            });
-            totalDisplay.textContent = `Total: $${total.toLocaleString('es-AR')}`;
-        }
-
-        document.querySelectorAll('.menu-quantity-control').forEach(control => {
-            const display = control.querySelector('.menu-quantity-display');
-            const parent = control.closest('.menu-menu-item');
-
-            control.querySelectorAll('.menu-quantity-btn')[1].addEventListener('click', () => {
-                display.textContent = parseInt(display.textContent) + 1;
+        control.querySelectorAll('.menu-quantity-btn')[0].addEventListener('click', () => {
+            if (parseInt(display.textContent) > 0) {
+                display.textContent = parseInt(display.textContent) - 1;
                 updateTotal();
-            });
+            }
+        });
+    });
 
-            control.querySelectorAll('.menu-quantity-btn')[0].addEventListener('click', () => {
-                if (parseInt(display.textContent) > 0) {
-                    display.textContent = parseInt(display.textContent) - 1;
-                    updateTotal();
-                }
-            });
+    // 🚩 Botón ENVIAR PEDIDO: solo muestra notificación de pedido, NO de mesa ocupada
+    document.querySelector('.menu-order-btn').addEventListener('click', () => {
+        const mesaId = document.getElementById('mesaSelect').value;
+        const productos = [];
+
+        document.querySelectorAll('.menu-menu-item').forEach(item => {
+            const cantidad = parseInt(item.querySelector('.menu-quantity-display').textContent);
+            if (cantidad > 0) {
+                productos.push({ id: parseInt(item.dataset.id), cantidad });
+            }
         });
 
-        document.querySelector('.menu-order-btn').addEventListener('click', () => {
-            const mesaId = document.getElementById('mesaSelect').value;
-            const productos = [];
-
-            document.querySelectorAll('.menu-menu-item').forEach(item => {
-                const cantidad = parseInt(item.querySelector('.menu-quantity-display').textContent);
-                if (cantidad > 0) {
-                    productos.push({ id: parseInt(item.dataset.id), cantidad });
+        fetch('<?= \App::baseUrl() ?>/pedido/guardar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mesa_id: mesaId, productos })
+        })
+            .then(res => res.text())
+            .then(res => {
+                if (res.trim() === 'ok') {
+                    cambiarEstadoMesa('ocupada', false); // NOTIFICA NO
+                    alert('✅ Pedido enviado correctamente');
+                    resetearVista();
+                } else {
+                    alert('Error al enviar pedido');
                 }
             });
+    });
 
-            fetch('<?= \App::baseUrl() ?>/pedido/guardar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mesa_id: mesaId, productos })
-            })
-                .then(res => res.text())
-                .then(res => {
-                    if (res.trim() === 'ok') {
-                        cambiarEstadoMesa('ocupada');
-                        resetearVista();
-                    } else {
-                        alert('Error al enviar pedido');
-                    }
-                });
-        });
+    // 🚩 Botón MESA OCUPADA: sí muestra notificación de mesa ocupada
+    document.querySelector('.menu-btn-amarillo').addEventListener('click', function () {
+        cambiarEstadoMesa('ocupada', true); // NOTIFICA SÍ
+    });
 
-        function cambiarEstadoMesa(estado) {
-            const mesaNumero = document.getElementById('mesaSelect').value;
-            fetch(`<?= \App::baseUrl() ?>/mesa/cambiarEstadoPorNumero?numero=${mesaNumero}&estado=${estado}`)
-                .then(res => res.text())
-                .then(res => {
-                    if (res.trim() !== 'ok') {
-                        alert("Error al cambiar el estado de la mesa");
+    // 🚩 Botón PEDIR CUENTA: igual que antes (puede notificar si querés)
+    document.querySelector('.menu-btn-azul').addEventListener('click', function () {
+        cambiarEstadoMesa('cuenta_solicitada', true);
+    });
+
+    // ⬇️ La función ahora recibe un segundo parámetro: notificar
+    function cambiarEstadoMesa(estado, notificar = false) {
+        const mesaNumero = document.getElementById('mesaSelect').value;
+        fetch(`<?= \App::baseUrl() ?>/mesa/cambiarEstadoPorNumero?numero=${mesaNumero}&estado=${estado}`)
+            .then(res => res.text())
+            .then(res => {
+                if (res.trim() === 'ok') {
+                    if (notificar && estado === 'ocupada') {
+                        alert("✅ Mesa marcada como ocupada");
                     }
-                });
-        }
-    </script>
+                    if (notificar && estado === 'cuenta_solicitada') {
+                        alert("✅ Cuenta solicitada");
+                    }
+                } else {
+                    alert("Error al cambiar el estado de la mesa");
+                }
+            });
+    }
+</script>
 </body>
 
 </html>
