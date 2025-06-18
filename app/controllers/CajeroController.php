@@ -29,29 +29,34 @@ class CajeroController extends Controller {
 	}
 
 	public function actionVistaCajero()
-	{
-		if (session_status() === PHP_SESSION_NONE) {
-			session_start();
-		}
+{
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
 
-		$footer = SiteController::footer();
-		$head = SiteController::head();
-		$nav = SiteController::nav();
-		$path = static::path();
+    $footer = SiteController::footer();
+    $head = SiteController::head();
+    $nav = SiteController::nav();
+    $path = static::path();
 
-		$mesaModel = new MesaModel();
-		$mesas = $mesaModel->obtenerConTotales();
+    $mesaModel = new MesaModel();
+    $mesas = $mesaModel->obtenerConTotales();
 
-		Response::render($this->viewDir(__NAMESPACE__), "vistaCajero", [
-			"title" => $this->title . "Mesas",
-			'ruta' => self::$ruta,
-			"head" => $head,
-			"nav" => $nav,
-			"footer" => $footer,
-			"mesas" => $mesas,
-			"cajero" => $_SESSION['user_email'] ?? 'Sin sesión'
-		]);
-	}
+    // 👇 AGREGADO
+    $pedidoModel = new \app\models\PedidoModel();
+    $pedidos = $pedidoModel->obtenerPedidosDelDiaConDetalle();
+
+    Response::render($this->viewDir(__NAMESPACE__), "vistaCajero", [
+        "title" => $this->title . "Mesas",
+        'ruta' => self::$ruta,
+        "head" => $head,
+        "nav" => $nav,
+        "footer" => $footer,
+        "mesas" => $mesas,
+        "cajero" => $_SESSION['user_email'] ?? 'Sin sesión',
+        "pedidos" => $pedidos // 👈 PASAR LOS PEDIDOS
+    ]);
+}
 
 	
 
