@@ -186,10 +186,11 @@ public function actionCerrarMesa()
 {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mesa_id = $_POST['mesa_id'] ?? null;
+        $medio_pago = $_POST['medio_pago'] ?? null;
 
-        if ($mesa_id) {
+        if ($mesa_id && $medio_pago) {
             $pedidoModel = new \app\models\PedidoModel();
-            $pedidoModel->cerrarPedidosDeHoyPorMesa($mesa_id);
+            $pedidoModel->cerrarPedidosDeHoyPorMesa($mesa_id, $medio_pago);
 
             $mesaModel = new \app\models\MesaModel();
             $mesaModel->actualizarEstado($mesa_id, 'disponible');
@@ -200,6 +201,28 @@ public function actionCerrarMesa()
             echo 'Faltan datos';
         }
     }
+}
+
+public function actionPlanillaCaja()
+{
+    $footer = \app\controllers\SiteController::footer();
+    $head = \app\controllers\SiteController::head();
+    $nav = \app\controllers\SiteController::nav();
+    $path = static::path();
+
+    $cajaModel = new \app\models\CajaModel();
+    $datos = $cajaModel->obtenerTotalesDelDia();
+    $productos = $cajaModel->resumenPorProducto();
+
+    \Response::render($this->viewDir(__NAMESPACE__), "planillaCaja", [
+        "title" => "Planilla de Caja",
+        "head" => $head,
+        "nav" => $nav,
+        "footer" => $footer,
+        "datos" => $datos,
+        "productos" => $productos,
+        "ruta" => $path,
+    ]);
 }
 }
 

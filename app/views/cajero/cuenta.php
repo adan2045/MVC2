@@ -38,12 +38,6 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .cuenta-bill-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-
         .cuenta-bill-table {
             width: 100%;
             border-collapse: collapse;
@@ -70,26 +64,35 @@
             font-size: 1.2rem;
         }
 
-        .cuenta-action-btn {
-            padding: 0.7rem 1.2rem;
+        .cuenta-medio-pago-label {
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .medio-pago-btn {
+            padding: 0.6rem 1rem;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            cursor: pointer;
+            background-color: #eee;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .medio-pago-btn.activo {
+            background-color: black;
+            color: white;
+        }
+
+        .cerrar-venta-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 0.7rem 1.5rem;
             border: none;
             border-radius: 6px;
-            margin-right: 0.5rem;
             cursor: pointer;
-            color: white;
             font-weight: bold;
-        }
-
-        .cuenta-btn-close {
-            background-color: #f39c12;
-        }
-
-        .cuenta-btn-print {
-            background-color: #3498db;
-        }
-
-        .cuenta-btn-back {
-            background-color: #7f8c8d;
         }
     </style>
 </head>
@@ -115,15 +118,10 @@
                 <tbody>
                     <?php foreach ($productos as $prod): ?>
                         <tr>
-                            <td>
-                                <?= isset($prod['nombre']) ? htmlspecialchars($prod['nombre']) : 'Producto desconocido' ?>
-                                <br>
-                                <small><?= isset($prod['descripcion']) ? htmlspecialchars($prod['descripcion']) : '' ?></small>
-                            </td>
-                            <td><?= isset($prod['cantidad']) ? $prod['cantidad'] : 0 ?></td>
-                            <td>$<?= isset($prod['precio']) ? number_format($prod['precio'], 2, ',', '.') : '0,00' ?></td>
-                            <td>$<?= isset($prod['subtotal']) ? number_format($prod['subtotal'], 2, ',', '.') : '0,00' ?>
-                            </td>
+                            <td><?= htmlspecialchars($prod['nombre'] ?? 'Producto desconocido') ?><br><small><?= htmlspecialchars($prod['descripcion'] ?? '') ?></small></td>
+                            <td><?= $prod['cantidad'] ?? 0 ?></td>
+                            <td>$<?= number_format($prod['precio'] ?? 0, 2, ',', '.') ?></td>
+                            <td>$<?= number_format($prod['subtotal'] ?? 0, 2, ',', '.') ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -133,35 +131,58 @@
                 <div class="cuenta-total-row">TOTAL: <span>$<?= number_format($total, 2, ',', '.') ?></span></div>
             </div>
 
-            <div class="cuenta-bill-actions">
-                <button class="cuenta-action-btn cuenta-btn-close" onclick="solicitarCuenta(<?= $mesa['id'] ?>)">
-                    Solicitar Cuenta
-                </button>
+            <div style="margin-top: 2rem;">
+                <label class="cuenta-medio-pago-label"><strong>Seleccione medio de pago:</strong></label>
+                <div style="margin-top: 1rem;">
+                    <button class="medio-pago-btn" data-medio="efectivo" onclick="seleccionarMedio('efectivo')">Efectivo</button>
+                    <button class="medio-pago-btn" data-medio="tarjeta" onclick="seleccionarMedio('tarjeta')">Tarjeta</button>
+                    <button class="medio-pago-btn" data-medio="mercadopago" onclick="seleccionarMedio('mercadopago')">Mercado Pago</button>
+                    <button class="medio-pago-btn" data-medio="qr" onclick="seleccionarMedio('qr')">QR</button>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <button class="cerrar-venta-btn" onclick="cerrarVenta(<?= $mesa['id'] ?>)">Cerrar Venta</button>
             </div>
         </div>
     </main>
 
     <script>
-        function solicitarCuenta(mesaId) {
-            fetch('<?= $ruta ?>/mesa/solicitarCuenta', {
+        let medioSeleccionado = '';
+
+        // Al cargar la página, seleccioná "efectivo" como método por defecto
+        window.onload = function () {
+            seleccionarMedio('efectivo');
+        };
+
+        function seleccionarMedio(medio) {
+            medioSeleccionado = medio;
+            document.querySelectorAll('.medio-pago-btn').forEach(btn => btn.classList.remove('activo'));
+            const boton = Array.from(document.querySelectorAll('.medio-pago-btn')).find(btn => btn.getAttribute('data-medio') === medio);
+            if (boton) boton.classList.add('activo');
+        }
+
+        function cerrarVenta(mesaId) {
+            if (!medioSeleccionado) {
+                alert("Debe seleccionar un medio de pago.");
+                return;
+            }
+
+            fetch('<?= $ruta ?>/cajero/marcarPagado', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'mesa_id=' + mesaId
+                body: `mesa_id=${mesaId}&medio_pago=${medioSeleccionado}`
             })
                 .then(res => res.text())
                 .then(res => {
                     if (res.trim() === 'ok') {
-                        // 🚧 Línea para imprimir en el futuro:
-                        // window.print();
-
-                        // Redirigir al cajero
+                        alert("Venta cerrada con éxito.");
                         window.location.href = '<?= $ruta ?>/cajero/vistaCajero';
                     } else {
-                        alert('Error al solicitar la cuenta');
+                        alert("Error al cerrar la venta.");
                     }
                 });
         }
     </script>
 </body>
-
 </html>
