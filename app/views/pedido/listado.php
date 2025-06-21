@@ -76,6 +76,7 @@
     <!-- Este botón ya está activo porque estás en listado de pedidos -->
     <a href="<?= $ruta ?>/cajero/vistaCajero">Estado de Mesas</a>
     <a href="<?= $ruta ?>/pedido/listado" class="active">Pedidos en Curso</a>
+    <a href="<?= $ruta ?>/cajero/planillaCaja">Planilla de caja</a>
 </div>
 
 <main>

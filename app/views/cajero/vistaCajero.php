@@ -27,11 +27,17 @@
             border: none;
             background-color: #eee;
             color: #000;
+            transition: background 0.18s;
         }
 
-        .vistaCajero-toggle .active {
-            background-color: black;
-            color: white;
+        .vistaCajero-toggle a.active {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .vistaCajero-toggle a:not(.active) {
+            background-color: #eee;
+            color: #000;
         }
 
         .vistaCajero-tables-grid {
@@ -112,16 +118,18 @@
         .vistaCajero-btn-pagado {
             background-color: #27ae60;
         }
-        
+
         @media (max-width: 900px) {
             .vistaCajero-tables-grid {
                 grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
                 gap: 10px;
             }
+
             .vistaCajero-table-card {
                 padding: 10px;
                 min-height: 120px;
             }
+
             .vistaCajero-action-btn {
                 font-size: 0.8rem;
                 padding: 5px 8px;
@@ -133,23 +141,29 @@
                 grid-template-columns: 1fr;
                 gap: 8px;
             }
+
             .vistaCajero-main {
                 padding: 4px;
             }
+
             .vistaCajero-table-card {
                 padding: 8px;
                 min-height: 90px;
             }
+
             .vistaCajero-table-number {
                 font-size: 1rem;
             }
+
             .vistaCajero-table-state {
                 font-size: 0.9rem;
             }
+
             .vistaCajero-action-buttons {
                 flex-direction: column;
                 gap: 4px;
             }
+
             .vistaCajero-action-btn {
                 font-size: 0.85rem;
                 width: 100%;
@@ -165,6 +179,7 @@
     <div class="vistaCajero-toggle">
         <a href="<?= $ruta ?>/cajero/vistaCajero" class="active">Estado de Mesas</a>
         <a href="<?= $ruta ?>/pedido/listado">Pedidos en Curso</a>
+        <a href="<?= $ruta ?>/cajero/planillaCaja">Planilla del Día</a>
     </div>
 
     <main class="vistaCajero-main">
@@ -280,15 +295,15 @@
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'mesa_id=' + mesaId
             })
-            .then(res => res.text())
-            .then(res => {
-                if (res.trim() === 'ok') {
-                    // window.print(); // Descomentá si querés imprimir
-                    window.location.href = '<?= $ruta ?>/cajero/vistaCajero';
-                } else {
-                    alert('Error al cerrar la mesa');
-                }
-            });
+                .then(res => res.text())
+                .then(res => {
+                    if (res.trim() === 'ok') {
+                        // window.print(); // Descomentá si querés imprimir
+                        window.location.href = '<?= $ruta ?>/cajero/vistaCajero';
+                    } else {
+                        alert('Error al cerrar la mesa');
+                    }
+                });
         }
             /*
         // ------ BLOQUE DE IMPRESIÓN AUTOMÁTICA DE COMANDA ------
@@ -305,11 +320,11 @@
         }
 
         function imprimirComanda(pedidoId) {
-    const items = pedidosJS.filter(p => p.pedido_id == pedidoId);
-    if (!items.length) return;
+            const items = pedidosJS.filter(p => p.pedido_id == pedidoId);
+            if (!items.length) return;
 
-    // Ajustamos todo: fuente grande, mucho padding, y descripción incluida
-    let comandaHTML = `
+            // Ajustamos todo: fuente grande, mucho padding, y descripción incluida
+            let comandaHTML = `
         <div style="font-family: monospace; font-size: 18px; width: 360px; padding: 22px;">
             <div style="text-align:center;">
                 <span style="font-size:26px; font-weight:bold; letter-spacing:2px; display:block;">PIZZERÍA SANTA MARÍA</span>
@@ -334,13 +349,14 @@
         </div>
     `;
 
-    const printWindow = window.open('', '', 'width=420,height=700');
-    printWindow.document.write(comandaHTML);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
-}*/
+            const printWindow = window.open('', '', 'width=420,height=700');
+            printWindow.document.write(comandaHTML);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }*/
     </script>
 </body>
+
 </html>
