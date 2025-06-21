@@ -224,6 +224,37 @@ public function actionPlanillaCaja()
         "ruta" => $path,
     ]);
 }
+public function actionAbrirCaja()
+{
+    if (session_status() === PHP_SESSION_NONE) session_start();
+
+    $monto = isset($_GET['monto']) ? floatval($_GET['monto']) : 0.0;
+    $hoy = date('Y-m-d');
+
+    // Usar PDO directamente para buscar caja abierta hoy
+    $db = \DataBase::getInstance()->getConnection();
+    $stmt = $db->prepare("SELECT * FROM cajas WHERE DATE(fecha_apertura) = ? AND fecha_cierre IS NULL");
+    $stmt->execute([$hoy]);
+    $cajaAbierta = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+    if ($cajaAbierta) {
+        // Ya hay caja abierta hoy, no hacer nada
+        header("Location: /MVC2/cajero/planillaCaja");
+        exit;
+    }
+
+    // Abrir caja (insertar registro)
+    $stmt = $db->prepare("INSERT INTO cajas (fecha_apertura, saldo_inicial) VALUES (NOW(), ?)");
+    $stmt->execute([$monto]);
+
+    // Guardar en sesión (opcional, pero útil si vas a usarlo luego)
+    $_SESSION['caja_abierta'] = true;
+    $_SESSION['caja_apertura'] = date('Y-m-d H:i:s');
+    $_SESSION['saldo_inicial'] = $monto;
+
+    header("Location: /MVC2/cajero/planillaCaja");
+    exit;
+}
 }
 
 /*

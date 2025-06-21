@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('America/Argentina/Buenos_Aires');
 session_start();
 // Habilitar el manejo de errores durante el desarrollo
 error_reporting(E_ALL);
