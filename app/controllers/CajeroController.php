@@ -306,6 +306,29 @@ public function actionRegistrarCajaFuerte()
     header("Location: /MVC2/cajero/planillaCaja");
     exit;
 }
+public function actionCerrarCaja() {
+    if (session_status() === PHP_SESSION_NONE) session_start();
+
+    try {
+        // ... (tu lógica de cierre, actualización en la base, etc)
+        // Por ejemplo:
+        $db = \DataBase::getInstance()->getConnection();
+        $hoy = date('Y-m-d');
+        // Buscá la caja abierta hoy y cerrala
+        $stmt = $db->prepare("UPDATE cajas SET fecha_cierre = NOW(), saldo_cierre = 0 WHERE fecha_cierre IS NULL AND DATE(fecha_apertura) = ?");
+        $stmt->execute([$hoy]);
+        if ($stmt->rowCount() > 0) {
+            $_SESSION['mensaje_exito'] = "¡Caja cerrada con éxito!";
+        } else {
+            $_SESSION['mensaje_error'] = "No se encontró una caja abierta para cerrar.";
+        }
+    } catch (\Exception $e) {
+        $_SESSION['mensaje_error'] = "Error al cerrar la caja: " . $e->getMessage();
+    }
+
+    header("Location: " . \App::baseUrl() . "/cajero/planillaCaja");
+    exit;
+}
 }
 
 /*

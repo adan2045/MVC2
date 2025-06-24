@@ -149,4 +149,18 @@ public function obtenerGastosDelDia($fecha = null)
     $fila = $stmt->fetch(\PDO::FETCH_ASSOC);
     return $fila ? floatval($fila['saldo_cierre']) : 0.0;
 }
+public function cerrarCajaDelDia($usuarioId = null, $fecha = null, $saldoCierre = 0.0) {
+    $fechaHoy = $fecha ?: date('Y-m-d');
+    $sql = "UPDATE cajas 
+            SET fecha_cierre = NOW(), saldo_cierre = :saldoCierre, usuario_cierre = :usuario
+            WHERE DATE(fecha_apertura) = :fechaHoy AND fecha_cierre IS NULL
+            ORDER BY fecha_apertura DESC LIMIT 1";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([
+        'saldoCierre' => $saldoCierre,
+        'usuario' => $usuarioId ?? null,
+        'fechaHoy' => $fechaHoy
+    ]);
+    return $stmt->rowCount() > 0;
+}
 }

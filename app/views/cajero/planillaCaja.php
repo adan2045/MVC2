@@ -282,6 +282,18 @@
     $modeloCaja = new \app\models\CajaModel();
     $ultimoCierre = method_exists($modeloCaja, 'obtenerUltimoCierre') ? $modeloCaja->obtenerUltimoCierre() : 0;
     ?>
+    <?php if (isset($_GET['cerrada']) && $_GET['cerrada'] == 'ok'): ?>
+  <div style="background:#d4edda; color:#155724; padding:12px; border-radius:8px; margin:16px 0; font-size:1.2rem; text-align:center; border:1px solid #c3e6cb;">
+    &#9989; Caja cerrada con éxito.
+  </div>
+<?php endif; ?>
+
+
+<?php if (!empty($_SESSION['mensaje_error'])): ?>
+  <div class="alert-error"><?= $_SESSION['mensaje_error'] ?></div>
+  <?php unset($_SESSION['mensaje_error']); ?>
+<?php endif; ?>
+
     <main class="planilla-container">
         <div class="planilla-header">
             <div class="fecha-selector">
