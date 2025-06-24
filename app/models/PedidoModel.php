@@ -17,16 +17,23 @@ class PedidoModel
         try {
             $this->db->beginTransaction();
 
-            // Ahora insertamos cerrado = 0 sí o sí
-            $stmt = $this->db->prepare("INSERT INTO pedidos (mesa_id, mozo_id, total, cerrado) VALUES (?, ?, ?, 0)");
-            $stmt->execute([$mesaId, $mozoId, $total]);
+
+            // CONSEGUÍ EL CAJA_ID ACTUAL
+            $cajaModel = new \app\models\CajaModel();
+            $cajaId = $cajaModel->obtenerCajaIdActual();
+
+            // Ahora insertamos cerrado = 0 sí o sí, y el caja_id
+            $stmt = $this->db->prepare("INSERT INTO pedidos (mesa_id, mozo_id, total, cerrado, caja_id) VALUES (?, ?, ?, 0, ?)");
+            $stmt->execute([$mesaId, $mozoId, $total, $cajaId]);
+            
             $pedidoId = $this->db->lastInsertId();
+
 
             $stmtDetalle = $this->db->prepare(
                 "INSERT INTO pedido_detalle (pedido_id, producto_id, cantidad, estado)
                  VALUES (?, ?, ?, 'pendiente')"
             );
-            
+
             foreach ($productos as $p) {
                 $stmtDetalle->execute([$pedidoId, $p['id'], $p['cantidad']]);
             }
@@ -93,7 +100,7 @@ class PedidoModel
             return false;
         }
     }
-    
+
     public function obtenerPedidosDelDiaConDetalle()
     {
         $sql = "

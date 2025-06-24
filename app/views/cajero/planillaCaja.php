@@ -1,3 +1,8 @@
+<?php
+$modeloCaja = new \app\models\CajaModel();
+$cajaId = $modeloCaja->obtenerCajaIdDelDia();
+$ultimoCierre = method_exists($modeloCaja, 'obtenerUltimoCierre') ? $modeloCaja->obtenerUltimoCierre() : 0;
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -7,17 +12,14 @@
     <link rel="stylesheet" href="/public/css/crud.css">
     <link rel="stylesheet" href="/public/css/listado.css">
     <style>
-        html,
-        body {
+        html, body {
             max-width: 100vw;
             overflow-x: hidden;
         }
-
         body {
             margin: 0;
             padding: 0;
         }
-
         .planilla-container {
             width: 100vw;
             min-height: 100vh;
@@ -29,27 +31,22 @@
             font-family: Arial, sans-serif;
             overflow-x: hidden;
         }
-
         .planilla-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 1rem;
             overflow-x: auto;
         }
-
-        .planilla-table th,
-        .planilla-table td {
+        .planilla-table th, .planilla-table td {
             border: 1px solid #ccc;
             padding: 8px;
             font-size: 0.98rem;
         }
-
         .vistaCajero-toggle {
             display: flex;
             justify-content: center;
             margin: 20px 0;
         }
-
         .vistaCajero-toggle a {
             flex: 1;
             padding: 10px;
@@ -61,17 +58,14 @@
             color: #000;
             transition: background 0.15s;
         }
-
         .vistaCajero-toggle .active {
             background-color: black;
             color: white;
         }
-
         .planilla-header {
             display: block;
             width: 100%;
         }
-
         .fecha-selector {
             display: flex;
             align-items: center;
@@ -83,7 +77,6 @@
             justify-content: flex-start;
             width: 100%;
         }
-
         .fecha-selector label {
             font-size: 1.8rem;
             font-weight: 700;
@@ -94,7 +87,6 @@
             text-align: left;
             padding-left: 35px;
         }
-
         .fecha-selector input[type="date"] {
             padding: 10px 16px;
             border: 1.5px solid #888;
@@ -103,12 +95,10 @@
             background: #f7f7f7;
             transition: border .18s;
         }
-
         .fecha-selector input[type="date"]:focus {
             outline: none;
             border: 2px solid #222;
         }
-
         .fecha-selector button {
             background: #111;
             color: #fff;
@@ -121,12 +111,10 @@
             box-shadow: 0 1px 5px rgba(0, 0, 0, .08);
             transition: background 0.15s, transform 0.09s;
         }
-
         .fecha-selector button:hover {
             background: #353535;
             transform: scale(1.05);
         }
-
         .planilla-botones-derecha {
             display: flex;
             flex-direction: column;
@@ -137,7 +125,6 @@
             margin-left: 6px;
             margin-top: 2rem;
         }
-
         .planilla-botones-derecha button,
         .planilla-botones-derecha a button {
             background: black;
@@ -153,12 +140,10 @@
             display: block;
             transition: background 0.15s;
         }
-
         .planilla-botones-derecha button:hover,
         .planilla-botones-derecha a button:hover {
             background: #222;
         }
-
         .contenido-principal {
             display: flex;
             align-items: flex-start;
@@ -166,17 +151,14 @@
             width: 100%;
             margin: 0;
         }
-
         .planilla-contenido {
             flex: 1 1 0;
             min-width: 0;
             padding: 2rem 2rem 2rem 2rem;
         }
-
         .planilla-resumen {
             margin-top: 1.2rem;
         }
-
         .planilla-resumen h4 {
             font-size: 1.8rem !important;
             font-weight: 700 !important;
@@ -192,7 +174,6 @@
             display: flex !important;
             align-items: center !important;
         }
-
         .estado-btn {
             padding: 4px 10px;
             margin: 2px;
@@ -203,12 +184,10 @@
             font-size: 0.9rem;
             cursor: pointer;
         }
-
         @media (max-width: 900px) {
             .contenido-principal {
                 flex-direction: column;
             }
-
             .planilla-botones-derecha {
                 align-items: stretch;
                 max-width: none;
@@ -216,7 +195,6 @@
                 margin-top: 1rem;
             }
         }
-
         /* MODAL GENERAL */
         .modal-fondo {
             position: fixed;
@@ -230,7 +208,6 @@
             align-items: center;
             justify-content: center;
         }
-
         .modal-contenido {
             background: #fff;
             border-radius: 16px;
@@ -240,19 +217,10 @@
             padding: 1.2rem 2rem 2rem 2rem;
             animation: modalFadeIn .24s;
         }
-
         @keyframes modalFadeIn {
-            from {
-                transform: translateY(60px);
-                opacity: 0;
-            }
-
-            to {
-                transform: none;
-                opacity: 1;
-            }
+            from { transform: translateY(60px); opacity: 0; }
+            to { transform: none; opacity: 1; }
         }
-
         .modal-header {
             display: flex;
             align-items: center;
@@ -261,7 +229,6 @@
             border-bottom: 1px solid #eee;
             padding-bottom: .3rem;
         }
-
         @media (max-width: 600px) {
             .modal-contenido {
                 padding: 0.7rem 0.7rem 1.4rem 0.7rem;
@@ -269,7 +236,6 @@
         }
     </style>
 </head>
-
 <body>
     <header><?= $nav ?></header>
 
@@ -278,21 +244,15 @@
         <a href="<?= $ruta ?>/pedido/listado">Pedidos en Curso</a>
         <a href="<?= $ruta ?>/cajero/planillaCaja" class="active">Planilla del Día</a>
     </div>
-    <?php
-    $modeloCaja = new \app\models\CajaModel();
-    $ultimoCierre = method_exists($modeloCaja, 'obtenerUltimoCierre') ? $modeloCaja->obtenerUltimoCierre() : 0;
-    ?>
     <?php if (isset($_GET['cerrada']) && $_GET['cerrada'] == 'ok'): ?>
-  <div style="background:#d4edda; color:#155724; padding:12px; border-radius:8px; margin:16px 0; font-size:1.2rem; text-align:center; border:1px solid #c3e6cb;">
-    &#9989; Caja cerrada con éxito.
-  </div>
-<?php endif; ?>
-
-
-<?php if (!empty($_SESSION['mensaje_error'])): ?>
-  <div class="alert-error"><?= $_SESSION['mensaje_error'] ?></div>
-  <?php unset($_SESSION['mensaje_error']); ?>
-<?php endif; ?>
+        <div style="background:#d4edda; color:#155724; padding:12px; border-radius:8px; margin:16px 0; font-size:1.2rem; text-align:center; border:1px solid #c3e6cb;">
+            &#9989; Caja cerrada con éxito.
+        </div>
+    <?php endif; ?>
+    <?php if (!empty($_SESSION['mensaje_error'])): ?>
+        <div class="alert-error"><?= $_SESSION['mensaje_error'] ?></div>
+        <?php unset($_SESSION['mensaje_error']); ?>
+    <?php endif; ?>
 
     <main class="planilla-container">
         <div class="planilla-header">
@@ -410,6 +370,7 @@
             </div>
         </div>
     </main>
+
     <!-- MODAL GASTOS -->
     <div id="gastoModal" class="modal-fondo" style="display: none;">
         <div class="modal-contenido">
@@ -417,8 +378,7 @@
                 <h2>Registrar Gasto</h2>
                 <span onclick="cerrarGastoModal()" style="cursor:pointer;font-size:1.5rem;">&times;</span>
             </div>
-            <form action="<?= $ruta ?>/cajero/registrarGasto" method="POST" class="registro-form"
-                style="padding: 1rem 0 0 0; margin:0;">
+            <form action="<?= $ruta ?>/cajero/registrarGasto" method="POST" class="registro-form" style="padding: 1rem 0 0 0; margin:0;">
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">Motivo</label>
@@ -426,18 +386,16 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Monto</label>
-                        <input type="number" step="0.01" name="monto" class="form-control" required
-                            placeholder="Monto $">
+                        <input type="number" step="0.01" name="monto" class="form-control" required placeholder="Monto $">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Autorizó</label>
-                        <input type="text" name="autorizado_por" class="form-control" required
-                            placeholder="Nombre o usuario">
+                        <input type="text" name="autorizado_por" class="form-control" required placeholder="Nombre o usuario">
                     </div>
                 </div>
+                <input type="hidden" name="caja_id" value="<?= htmlspecialchars($cajaId) ?>">
                 <button type="submit" class="btn" style="margin-top:12px;">Registrar Gasto</button>
-                <button type="button" class="btn" style="background:#aaa;margin-top:12px;"
-                    onclick="cerrarGastoModal()">Cancelar</button>
+                <button type="button" class="btn" style="background:#aaa;margin-top:12px;" onclick="cerrarGastoModal()">Cancelar</button>
             </form>
         </div>
     </div>
@@ -448,15 +406,20 @@
                 <h2>Abrir Caja</h2>
                 <span onclick="cerrarCajaModal()" style="cursor:pointer;font-size:1.5rem;">&times;</span>
             </div>
-            <form action="<?= $ruta ?>/cajero/abrirCaja" method="GET" class="registro-form"
-                style="padding: 1rem 0 0 0; margin:0;">
+            <form action="<?= $ruta ?>/cajero/abrirCaja" method="GET" class="registro-form" style="padding: 1rem 0 0 0; margin:0;">
                 <div class="form-group full-width">
                     <label class="form-label">Monto Inicial</label>
-                    <input type="number" name="monto" id="montoAbrirCaja" class="form-control" required>
+                    <input 
+                        type="number"
+                        name="monto"
+                        id="montoAbrirCaja"
+                        class="form-control"
+                        required
+                        value="<?= htmlspecialchars($ultimoCierre) ?>"
+                    >
                 </div>
                 <button type="submit" class="btn" style="margin-top:12px;">Abrir Caja</button>
-                <button type="button" class="btn" style="background:#aaa;margin-top:12px;"
-                    onclick="cerrarCajaModal()">Cancelar</button>
+                <button type="button" class="btn" style="background:#aaa;margin-top:12px;" onclick="cerrarCajaModal()">Cancelar</button>
             </form>
         </div>
     </div>
@@ -467,8 +430,7 @@
                 <h2>Caja Fuerte</h2>
                 <span onclick="cerrarCajaFuerteModal()" style="cursor:pointer;font-size:1.5rem;">&times;</span>
             </div>
-            <form action="<?= $ruta ?>/cajero/registrarCajaFuerte" method="POST" class="registro-form"
-                style="padding: 1rem 0 0 0; margin:0;">
+            <form action="<?= $ruta ?>/cajero/registrarCajaFuerte" method="POST" class="registro-form" style="padding: 1rem 0 0 0; margin:0;">
                 <div class="form-group full-width">
                     <label class="form-label">Monto a pasar</label>
                     <input type="number" name="monto" class="form-control" required>
@@ -477,9 +439,9 @@
                     <label class="form-label">Responsable</label>
                     <input type="text" name="responsable" class="form-control" required>
                 </div>
+                <input type="hidden" name="caja_id" value="<?= htmlspecialchars($cajaId) ?>">
                 <button type="submit" class="btn" style="margin-top:12px;">Registrar</button>
-                <button type="button" class="btn" style="background:#aaa;margin-top:12px;"
-                    onclick="cerrarCajaFuerteModal()">Cancelar</button>
+                <button type="button" class="btn" style="background:#aaa;margin-top:12px;" onclick="cerrarCajaFuerteModal()">Cancelar</button>
             </form>
         </div>
     </div>
@@ -498,13 +460,13 @@
         // POPUP Gastos
         function abrirGastoModal() {
             document.getElementById('gastoModal').style.display = 'flex';
-            setTimeout(() => { document.querySelector('#gastoModal input[name="tipo_gasto"]').focus(); }, 150);
+            setTimeout(() => { document.querySelector('#gastoModal input[name="motivo"]').focus(); }, 150);
         }
         function cerrarGastoModal() { document.getElementById('gastoModal').style.display = 'none'; }
         // POPUP Abrir Caja
         function abrirCajaModal() {
             document.getElementById('abrirCajaModal').style.display = 'flex';
-            // Poner último cierre si existe
+            // Ponemos el valor en el input del modal SOLO cuando se abre
             <?php if ($ultimoCierre): ?>
                 document.getElementById('montoAbrirCaja').value = <?= json_encode($ultimoCierre) ?>;
             <?php else: ?>
@@ -528,7 +490,6 @@
             }
         });
     </script>
-    <?= $footer ?>
-</body>
 
+</body>
 </html>
