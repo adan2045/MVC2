@@ -89,7 +89,30 @@ class CajeroController extends Controller {
         echo 'error';
     }
 }
+public function actionRegistrarGasto()
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $motivo = $_POST['motivo'] ?? '';
+        $monto = $_POST['monto'] ?? 0;
+        $autorizado_por = $_POST['autorizado_por'] ?? '';
+        $usuario_id = $_SESSION['user_id'] ?? null; // Cambia esto si guardás el nombre y no el id
 
+        if ($motivo != '' && $monto > 0) {
+            $db = \DataBase::getInstance()->getConnection();
+
+            // Podés guardar el autorizado_por en motivo, si no tenés columna aparte
+            $motivo_con_autorizado = $motivo . ' (Autorizó: ' . $autorizado_por . ')';
+
+            $stmt = $db->prepare("INSERT INTO gastos (fecha, monto, motivo, usuario_id) VALUES (NOW(), ?, ?, ?)");
+            $stmt->execute([$monto, $motivo_con_autorizado, $usuario_id]);
+
+            header("Location: /MVC2/cajero/planillaCaja");
+            exit;
+        } else {
+            echo "Faltan datos obligatorios";
+        }
+    }
+}
 public function actionCuentaMesa()
 {
     if (!isset($_GET['id'])) {
@@ -214,6 +237,12 @@ public function actionPlanillaCaja()
     $datos = $cajaModel->obtenerTotalesDelDia();
     $productos = $cajaModel->resumenPorProducto();
 
+    // --- NUEVO: Agregar gastos del día ---
+    $gastos = $cajaModel->obtenerGastosDelDia();
+    $datos['total_gastos'] = $gastos['total'];
+    $datos['cantidad_gastos'] = $gastos['cantidad'];
+    // --------------------------------------
+
     \Response::render($this->viewDir(__NAMESPACE__), "planillaCaja", [
         "title" => "Planilla de Caja",
         "head" => $head,
@@ -252,6 +281,28 @@ public function actionAbrirCaja()
     $_SESSION['caja_apertura'] = date('Y-m-d H:i:s');
     $_SESSION['saldo_inicial'] = $monto;
 
+    header("Location: /MVC2/cajero/planillaCaja");
+    exit;
+}
+public function actionRegistrarCajaFuerte()
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $monto = isset($_POST['monto']) ? floatval($_POST['monto']) : 0;
+        $responsable = trim($_POST['responsable'] ?? '');
+
+        if ($monto > 0 && $responsable !== '') {
+            $db = \DataBase::getInstance()->getConnection();
+            $stmt = $db->prepare("INSERT INTO caja_fuerte (fecha, monto, responsable) VALUES (NOW(), ?, ?)");
+            $stmt->execute([$monto, $responsable]);
+            header("Location: /MVC2/cajero/planillaCaja");
+            exit;
+        } else {
+            // Error: faltan datos
+            header("Location: /MVC2/cajero/planillaCaja?error=1");
+            exit;
+        }
+    }
+    // Si no es POST
     header("Location: /MVC2/cajero/planillaCaja");
     exit;
 }

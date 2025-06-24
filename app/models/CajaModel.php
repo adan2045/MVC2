@@ -62,7 +62,14 @@ class CajaModel
     // Nuevos cálculos
     $inicioCaja = $this->obtenerSaldoInicial($fecha);
     $cajaFuerte = $this->obtenerCajaFuerteDelDia($fecha);
-    $gastos     = $this->obtenerGastosDelDia($fecha);
+
+    // Gastos del día y cantidad de gastos
+    $sqlGastos = "SELECT COALESCE(SUM(monto),0) as total_gastos, COUNT(*) as cantidad_gastos FROM gastos WHERE DATE(fecha) = :fechaHoy";
+    $stmt = $this->db->prepare($sqlGastos);
+    $stmt->execute(['fechaHoy' => $fechaHoy]);
+    $gastosRow = $stmt->fetch(\PDO::FETCH_ASSOC);
+    $totalGastos = $gastosRow ? floatval($gastosRow['total_gastos']) : 0;
+    $cantidadGastos = $gastosRow ? intval($gastosRow['cantidad_gastos']) : 0;
 
     $datos['efectivo_total']    = $pagos['efectivo']['total'];
     $datos['efectivo_cantidad'] = $pagos['efectivo']['cantidad'];
@@ -74,11 +81,27 @@ class CajaModel
     $datos['qr_cantidad']       = $pagos['qr']['cantidad'];
     $datos['inicio_caja']       = $inicioCaja;
     $datos['efectivo_ventas']   = $pagos['efectivo']['total'];
-    $datos['caja_fuerte'] = $this->obtenerCajaFuerteDelDia($fecha);
-    $datos['gastos']            = $gastos;
-    $datos['saldo'] = $pagos['efectivo']['total'] + $datos['inicio_caja'] - $datos['caja_fuerte'];
+    $datos['caja_fuerte']       = $cajaFuerte;
+    $datos['cantidad_caja_fuerte'] = $this->obtenerCantidadCajaFuerte($fecha);
+    $datos['total_gastos']      = $totalGastos;
+    $datos['cantidad_gastos']   = $cantidadGastos;
+
+    // SALDO: inicio de caja + ventas en efectivo - caja fuerte - gastos
+    $datos['saldo'] = floatval($inicioCaja)
+                    + floatval($pagos['efectivo']['total'])
+                    - floatval($cajaFuerte)
+                    - floatval($totalGastos);
 
     return $datos;
+}
+public function obtenerCantidadCajaFuerte($fecha = null)
+{
+    $fechaHoy = $fecha ?: date('Y-m-d');
+    $sql = "SELECT COUNT(*) as cantidad FROM caja_fuerte WHERE DATE(fecha) = :fechaHoy";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute(['fechaHoy' => $fechaHoy]);
+    $fila = $stmt->fetch(\PDO::FETCH_ASSOC);
+    return $fila ? intval($fila['cantidad']) : 0;
 }
    public function obtenerCajaFuerteDelDia($fecha = null)
 {
@@ -93,11 +116,14 @@ class CajaModel
 public function obtenerGastosDelDia($fecha = null)
 {
     $fechaHoy = $fecha ?: date('Y-m-d');
-    $sql = "SELECT COALESCE(SUM(monto),0) as total FROM gastos WHERE DATE(fecha) = :fechaHoy";
+    $sql = "SELECT COALESCE(SUM(monto),0) as total, COUNT(*) as cantidad FROM gastos WHERE DATE(fecha) = :fechaHoy";
     $stmt = $this->db->prepare($sql);
     $stmt->execute(['fechaHoy' => $fechaHoy]);
     $fila = $stmt->fetch(\PDO::FETCH_ASSOC);
-    return $fila ? floatval($fila['total']) : 0.0;
+    return [
+        'total' => isset($fila['total']) ? floatval($fila['total']) : 0.0,
+        'cantidad' => isset($fila['cantidad']) ? intval($fila['cantidad']) : 0
+    ];
 }
 
     
@@ -116,4 +142,11 @@ public function obtenerGastosDelDia($fecha = null)
         $stmt->execute(['fechaHoy' => $fechaHoy]);
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
+    public function obtenerUltimoCierre() {
+    $sql = "SELECT saldo_cierre FROM cajas WHERE saldo_cierre IS NOT NULL ORDER BY fecha_cierre DESC LIMIT 1";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute();
+    $fila = $stmt->fetch(\PDO::FETCH_ASSOC);
+    return $fila ? floatval($fila['saldo_cierre']) : 0.0;
+}
 }
