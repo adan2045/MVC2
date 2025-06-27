@@ -350,5 +350,160 @@ class CajeroController extends Controller {
         header("Location: " . \App::baseUrl() . "/cajero/planillaCaja");
         exit;
     }
+    public function actionLibroDiario()
+{
+    if (session_status() === PHP_SESSION_NONE) session_start();
+    $db = \DataBase::getInstance()->getConnection();
+
+    // Tomar caja actual (o la última de hoy si no hay en sesión)
+    $cajaId = $_SESSION['caja_id'] ?? null;
+    $fechaSeleccionada = $_GET['fecha'] ?? date('Y-m-d');
+
+    // Buscar cajaId por fecha si no está en sesión
+    if (!$cajaId) {
+        $stmt = $db->prepare("SELECT id FROM cajas WHERE DATE(fecha_apertura) = ? ORDER BY fecha_apertura DESC LIMIT 1");
+        $stmt->execute([$fechaSeleccionada]);
+        $cajaId = $stmt->fetchColumn();
+    }
+
+    // Buscar saldo inicial
+    $inicioCaja = 0;
+    if ($cajaId) {
+        $stmt = $db->prepare("SELECT saldo_inicial FROM cajas WHERE id = ?");
+        $stmt->execute([$cajaId]);
+        $inicioCaja = $stmt->fetchColumn() ?? 0;
+    }
+
+    // Movimientos de ventas (pedidos cerrados de la caja)
+    $stmt = $db->prepare("SELECT p.id, p.total, p.metodo_pago, p.mesa_id, p.fecha
+        FROM pedidos p WHERE p.caja_id = ? AND p.cerrado = 1");
+    $stmt->execute([$cajaId]);
+    $ventas = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    // Gastos de la caja
+    $stmt = $db->prepare("SELECT id, monto, motivo, autorizado_por, fecha FROM gastos WHERE caja_id = ?");
+    $stmt->execute([$cajaId]);
+    $gastos = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    // Caja fuerte de la caja
+    $stmt = $db->prepare("SELECT id, monto, responsable, fecha FROM caja_fuerte WHERE caja_id = ?");
+    $stmt->execute([$cajaId]);
+    $cajaFuerte = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    // Para obtener número de mesa
+    $cacheMesas = [];
+    $getNumeroMesa = function($mesaId) use (&$cacheMesas, $db) {
+        if (!$mesaId) return '';
+        if (isset($cacheMesas[$mesaId])) return $cacheMesas[$mesaId];
+        $stmtMesa = $db->prepare("SELECT numero FROM mesas WHERE id = ?");
+        $stmtMesa->execute([$mesaId]);
+        $num = $stmtMesa->fetchColumn();
+        $cacheMesas[$mesaId] = $num ?: '';
+        return $cacheMesas[$mesaId];
+    };
+
+    // Unir y ordenar todos los movimientos
+    $movimientos = [];
+    // Inicio de caja
+    $movimientos[] = [
+        'tipo' => 'inicio',
+        'detalle' => "INICIO DE CAJA",
+        'efectivo' => $inicioCaja,
+        'tarjeta' => '',
+        'qr' => '',
+        'mp' => '',
+        'total' => $inicioCaja,
+        'mesa' => '',
+        'fecha_hora' => $fechaSeleccionada . ' 08:00', // O la real si la tenés
+        'clase_efectivo' => 'entrada',
+        'clase_tarjeta' => '',
+        'clase_qr' => '',
+        'clase_mp' => '',
+        'clase_total' => 'entrada',
+        'ticket_url' => ''
+    ];
+    // Ventas
+    foreach ($ventas as $v) {
+        $detalle = "TICKET #" . str_pad($v['id'], 4, '0', STR_PAD_LEFT);
+        $metodo = strtolower($v['metodo_pago']);
+        $mov = [
+            'tipo' => 'venta',
+            'detalle' => $detalle,
+            'efectivo' => $metodo=='efectivo' ? $v['total'] : '',
+            'tarjeta' => $metodo=='tarjeta' ? $v['total'] : '',
+            'qr' => $metodo=='qr' ? $v['total'] : '',
+            'mp' => $metodo=='mercadopago' ? $v['total'] : '',
+            'total' => $v['total'],
+            'mesa' => $getNumeroMesa($v['mesa_id']),
+            'fecha_hora' => date('Y-m-d H:i', strtotime($v['fecha'])),
+            'clase_efectivo' => $metodo=='efectivo' ? 'venta' : '',
+            'clase_tarjeta' => $metodo=='tarjeta' ? 'venta' : '',
+            'clase_qr' => $metodo=='qr' ? 'venta' : '',
+            'clase_mp' => $metodo=='mercadopago' ? 'venta' : '',
+            'clase_total' => 'venta',
+            'ticket_url' => '/MVC2/ticket/ver?id='.$v['id']
+        ];
+        $movimientos[] = $mov;
+    }
+    // Caja Fuerte (deposito/cierre parcial, los tratamos como ingreso VERDE si es positivo)
+    foreach ($cajaFuerte as $cf) {
+        $movimientos[] = [
+            'tipo' => 'caja_fuerte',
+            'detalle' => "Depósito Caja Fuerte (".$cf['responsable'].")",
+            'efectivo' => $cf['monto'],
+            'tarjeta' => '',
+            'qr' => '',
+            'mp' => '',
+            'total' => $cf['monto'],
+            'mesa' => '',
+            'fecha_hora' => date('Y-m-d H:i', strtotime($cf['fecha'])),
+            'clase_efectivo' => 'entrada',
+            'clase_tarjeta' => '',
+            'clase_qr' => '',
+            'clase_mp' => '',
+            'clase_total' => 'entrada',
+            'ticket_url' => ''
+        ];
+    }
+    // Gastos (en rojo)
+    foreach ($gastos as $g) {
+        $movimientos[] = [
+            'tipo' => 'gasto',
+            'detalle' => "GASTO: ".$g['motivo'].($g['autorizado_por'] ? " (aut: ".$g['autorizado_por'].")" : ""),
+            'efectivo' => -abs($g['monto']),
+            'tarjeta' => '',
+            'qr' => '',
+            'mp' => '',
+            'total' => -abs($g['monto']),
+            'mesa' => '',
+            'fecha_hora' => date('Y-m-d H:i', strtotime($g['fecha'])),
+            'clase_efectivo' => 'egreso',
+            'clase_tarjeta' => '',
+            'clase_qr' => '',
+            'clase_mp' => '',
+            'clase_total' => 'egreso',
+            'ticket_url' => ''
+        ];
+    }
+    // Ordenar por fecha/hora
+    usort($movimientos, function($a, $b) {
+        return strcmp($a['fecha_hora'], $b['fecha_hora']);
+    });
+
+    // Totales
+    $totales = [
+        'efectivo' => 0, 'tarjeta' => 0, 'qr' => 0, 'mp' => 0, 'total' => 0
+    ];
+    foreach($movimientos as $m) {
+        $totales['efectivo'] += floatval($m['efectivo'] ?: 0);
+        $totales['tarjeta'] += floatval($m['tarjeta'] ?: 0);
+        $totales['qr']      += floatval($m['qr'] ?: 0);
+        $totales['mp']      += floatval($m['mp'] ?: 0);
+        $totales['total']   += floatval($m['total'] ?: 0);
+    }
+
+    // Renderizar vista
+    require __DIR__ . '/../views/cajero/libroDiario.php';
+}
 }
 ?>
