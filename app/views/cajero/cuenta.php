@@ -99,13 +99,26 @@
 
 <body class="cuenta-body">
     <header class="cuenta-header">
-        <div class="cuenta-terminal-title">Detalle de Cuenta - Mesa <?= $mesa['numero'] ?></div>
+        <div class="cuenta-terminal-title">
+            Detalle de Cuenta -
+            <?php if (!empty($mesa) && isset($mesa['numero'])): ?>
+                Mesa <?= htmlspecialchars($mesa['numero']) ?>
+            <?php else: ?>
+                Mesa cerrada o no encontrada
+            <?php endif; ?>
+        </div>
         <div class="cuenta-user-info">Mozo: <?= $_SESSION['usuario']['nombre'] ?? 'Sin nombre' ?></div>
     </header>
 
     <main class="cuenta-main">
         <div class="cuenta-bill-container">
-            <h2>Mesa <?= $mesa['numero'] ?> - Cuenta Final</h2>
+            <h2>
+                <?php if (!empty($mesa) && isset($mesa['numero'])): ?>
+                    Mesa <?= htmlspecialchars($mesa['numero']) ?> - Cuenta Final
+                <?php else: ?>
+                    Ticket cerrado / Mesa no encontrada
+                <?php endif; ?>
+            </h2>
             <table class="cuenta-bill-table">
                 <thead>
                     <tr>
@@ -118,35 +131,56 @@
                 <tbody>
                     <?php foreach ($productos as $prod): ?>
                         <tr>
-                            <td><?= htmlspecialchars($prod['nombre'] ?? 'Producto desconocido') ?><br><small><?= htmlspecialchars($prod['descripcion'] ?? '') ?></small></td>
+                            <td><?= htmlspecialchars($prod['nombre'] ?? 'Producto desconocido') ?><br>
+                                <small><?= htmlspecialchars($prod['descripcion'] ?? '') ?></small>
+                            </td>
                             <td><?= $prod['cantidad'] ?? 0 ?></td>
                             <td>$<?= number_format($prod['precio'] ?? 0, 2, ',', '.') ?></td>
-                            <td>$<?= number_format($prod['subtotal'] ?? 0, 2, ',', '.') ?></td>
+                            <td>
+                                $<?= number_format(
+                                    isset($prod['subtotal']) ? $prod['subtotal'] : ($prod['precio'] ?? 0) * ($prod['cantidad'] ?? 0),
+                                    2, ',', '.'
+                                ) ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
 
             <div class="cuenta-bill-totals">
-                <div class="cuenta-total-row">TOTAL: <span>$<?= number_format($total, 2, ',', '.') ?></span></div>
-            </div>
-
-            <div style="margin-top: 2rem;">
-                <label class="cuenta-medio-pago-label"><strong>Seleccione medio de pago:</strong></label>
-                <div style="margin-top: 1rem;">
-                    <button class="medio-pago-btn" data-medio="efectivo" onclick="seleccionarMedio('efectivo')">Efectivo</button>
-                    <button class="medio-pago-btn" data-medio="tarjeta" onclick="seleccionarMedio('tarjeta')">Tarjeta</button>
-                    <button class="medio-pago-btn" data-medio="mercadopago" onclick="seleccionarMedio('mercadopago')">Mercado Pago</button>
-                    <button class="medio-pago-btn" data-medio="qr" onclick="seleccionarMedio('qr')">QR</button>
+                <div class="cuenta-total-row">
+                    TOTAL: <span>$<?= number_format($total, 2, ',', '.') ?></span>
                 </div>
             </div>
 
-            <div style="margin-top: 2rem;">
-                <button class="cerrar-venta-btn" onclick="cerrarVenta(<?= $mesa['id'] ?>)">Cerrar Venta</button>
-            </div>
+            <?php
+            // Si hay mesa activa (mesa abierta), mostramos los botones
+            $mostrarBotones = !empty($mesa) && isset($mesa['id']);
+            ?>
+            <?php if ($mostrarBotones): ?>
+                <!-- Solo se puede cerrar venta si la mesa está activa -->
+                <div style="margin-top: 2rem;">
+                    <label class="cuenta-medio-pago-label"><strong>Seleccione medio de pago:</strong></label>
+                    <div style="margin-top: 1rem;">
+                        <button class="medio-pago-btn" data-medio="efectivo" onclick="seleccionarMedio('efectivo')">Efectivo</button>
+                        <button class="medio-pago-btn" data-medio="tarjeta" onclick="seleccionarMedio('tarjeta')">Tarjeta</button>
+                        <button class="medio-pago-btn" data-medio="mercadopago" onclick="seleccionarMedio('mercadopago')">Mercado Pago</button>
+                        <button class="medio-pago-btn" data-medio="qr" onclick="seleccionarMedio('qr')">QR</button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <button class="cerrar-venta-btn" onclick="cerrarVenta(<?= $mesa['id'] ?>)">Cerrar Venta</button>
+                </div>
+            <?php else: ?>
+                <div style="margin-top:2rem; color:#555; font-weight:bold;">
+                    <em>Venta cerrada.</em>
+                </div>
+            <?php endif; ?>
         </div>
     </main>
 
+    <?php if (!empty($mesa) && isset($mesa['id'])): ?>
     <script>
         let medioSeleccionado = '';
 
@@ -184,5 +218,6 @@
                 });
         }
     </script>
+    <?php endif; ?>
 </body>
 </html>

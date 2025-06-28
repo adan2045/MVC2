@@ -17,7 +17,6 @@ class PedidoModel
         try {
             $this->db->beginTransaction();
 
-
             // CONSEGUÍ EL CAJA_ID ACTUAL
             $cajaModel = new \app\models\CajaModel();
             $cajaId = $cajaModel->obtenerCajaIdActual();
@@ -27,7 +26,6 @@ class PedidoModel
             $stmt->execute([$mesaId, $mozoId, $total, $cajaId]);
             
             $pedidoId = $this->db->lastInsertId();
-
 
             $stmtDetalle = $this->db->prepare(
                 "INSERT INTO pedido_detalle (pedido_id, producto_id, cantidad, estado)
@@ -99,6 +97,44 @@ class PedidoModel
             $db->rollBack();
             return false;
         }
+    }
+
+    // SOLO UNA VEZ ESTE MÉTODO
+    public function obtenerDetalleCuentaPorPedido($pedidoId)
+    {
+        $db = $this->db;
+        $stmt = $db->prepare("SELECT * FROM pedidos WHERE id = ?");
+        $stmt->execute([$pedidoId]);
+        $pedido = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if (!$pedido) {
+            return ['mesa' => [], 'productos' => [], 'total' => 0];
+        }
+
+        $mesaId = $pedido['mesa_id'];
+        $stmtMesa = $db->prepare("SELECT * FROM mesas WHERE id = ?");
+        $stmtMesa->execute([$mesaId]);
+        $mesa = $stmtMesa->fetch(\PDO::FETCH_ASSOC);
+        if (!$mesa) $mesa = []; // <--- OJO, no dejarlo en false
+
+        $stmtProd = $db->prepare(
+            "SELECT pd.*, pr.nombre, pr.descripcion, pr.precio
+             FROM pedido_detalle pd
+             JOIN productos pr ON pd.producto_id = pr.id
+             WHERE pd.pedido_id = ?"
+        );
+        $stmtProd->execute([$pedidoId]);
+        $productos = $stmtProd->fetchAll(\PDO::FETCH_ASSOC);
+
+        $total = 0;
+        foreach ($productos as $prod) {
+            $total += $prod['precio'] * $prod['cantidad'];
+        }
+        return [
+            'mesa' => $mesa,
+            'productos' => $productos,
+            'total' => $total
+        ];
     }
 
     public function obtenerPedidosDelDiaConDetalle()

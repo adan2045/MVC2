@@ -155,31 +155,43 @@ class CajeroController extends Controller {
     }
 
     public function actionCuenta()
-    {
-        if (!isset($_GET['id'])) {
-            echo "Mesa no especificada.";
-            return;
+{
+    $pedidoId = isset($_GET['id']) ? intval($_GET['id']) : null;
+    $mesaId   = isset($_GET['mesa']) ? intval($_GET['mesa']) : null;
+
+    $footer = SiteController::footer();
+    $head = SiteController::head();
+    $nav = SiteController::nav();
+
+    $pedidoModel = new \app\models\PedidoModel();
+
+    // Si entra desde libro diario
+    if ($pedidoId) {
+        $datos = $pedidoModel->obtenerDetalleCuentaPorPedido($pedidoId);
+        // Si no hay productos, puede ser una mesa abierta, intenta por mesa con el mismo id
+        if (empty($datos['productos']) && $mesaId === null) {
+            $datos = $pedidoModel->obtenerDetalleCuentaPorMesa($pedidoId);
         }
-
-        $mesaId = intval($_GET['id']);
-        $pedidoModel = new \app\models\PedidoModel();
-        $datos = $pedidoModel->obtenerDetalleCuentaPorMesa($mesaId);
-
-        $footer = SiteController::footer();
-        $head = SiteController::head();
-        $nav = SiteController::nav();
-
-        Response::render('cajero', 'cuenta', [
-            'head' => $head,
-            'title' => 'Cuenta de Mesa',
-            'nav' => $nav,
-            'footer' => $footer,
-            'mesa' => $datos['mesa'],
-            'productos' => $datos['productos'],
-            'total' => $datos['total'],
-            'ruta' => \App::baseUrl(),
-        ]);
     }
+    // Si entra desde vista cajero
+    elseif ($mesaId) {
+        $datos = $pedidoModel->obtenerDetalleCuentaPorMesa($mesaId);
+    } else {
+        $datos = ['mesa'=>[], 'productos'=>[], 'total'=>0];
+    }
+
+    Response::render('cajero', 'cuenta', [
+        'head' => $head,
+        'title' => 'Cuenta',
+        'nav' => $nav,
+        'footer' => $footer,
+        'mesa' => $datos['mesa'],
+        'productos' => $datos['productos'],
+        'total' => $datos['total'],
+        'ruta' => \App::baseUrl(),
+    ]);
+}
+
 
     public function actionCerrarMesa()
     {
@@ -366,12 +378,15 @@ class CajeroController extends Controller {
         $cajaId = $stmt->fetchColumn();
     }
 
-    // Buscar saldo inicial
+    // Buscar saldo inicial y hora real de apertura
     $inicioCaja = 0;
+    $fechaApertura = '';
     if ($cajaId) {
-        $stmt = $db->prepare("SELECT saldo_inicial FROM cajas WHERE id = ?");
+        $stmt = $db->prepare("SELECT saldo_inicial, fecha_apertura FROM cajas WHERE id = ?");
         $stmt->execute([$cajaId]);
-        $inicioCaja = $stmt->fetchColumn() ?? 0;
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $inicioCaja = $row['saldo_inicial'] ?? 0;
+        $fechaApertura = $row['fecha_apertura'] ?? '';
     }
 
     // Movimientos de ventas (pedidos cerrados de la caja)
@@ -414,7 +429,7 @@ class CajeroController extends Controller {
         'mp' => '',
         'total' => $inicioCaja,
         'mesa' => '',
-        'fecha_hora' => $fechaSeleccionada . ' 08:00', // O la real si la tenés
+        'fecha_hora' => $fechaApertura ? date('Y-m-d H:i', strtotime($fechaApertura)) : $fechaSeleccionada . ' 08:00',
         'clase_efectivo' => 'entrada',
         'clase_tarjeta' => '',
         'clase_qr' => '',
@@ -441,11 +456,11 @@ class CajeroController extends Controller {
             'clase_qr' => $metodo=='qr' ? 'venta' : '',
             'clase_mp' => $metodo=='mercadopago' ? 'venta' : '',
             'clase_total' => 'venta',
-            'ticket_url' => '/MVC2/ticket/ver?id='.$v['id']
+            'ticket_url' => '/MVC2/cajero/cuenta?id=' . $v['id']  // <--- Link al detalle real
         ];
         $movimientos[] = $mov;
     }
-    // Caja Fuerte (deposito/cierre parcial, los tratamos como ingreso VERDE si es positivo)
+    // Caja Fuerte (egreso en rojo)
     foreach ($cajaFuerte as $cf) {
         $movimientos[] = [
             'tipo' => 'caja_fuerte',
@@ -457,11 +472,11 @@ class CajeroController extends Controller {
             'total' => $cf['monto'],
             'mesa' => '',
             'fecha_hora' => date('Y-m-d H:i', strtotime($cf['fecha'])),
-            'clase_efectivo' => 'entrada',
+            'clase_efectivo' => 'egreso',
             'clase_tarjeta' => '',
             'clase_qr' => '',
             'clase_mp' => '',
-            'clase_total' => 'entrada',
+            'clase_total' => 'egreso',
             'ticket_url' => ''
         ];
     }
@@ -505,5 +520,6 @@ class CajeroController extends Controller {
     // Renderizar vista
     require __DIR__ . '/../views/cajero/libroDiario.php';
 }
+
 }
 ?>
