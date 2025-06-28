@@ -17,14 +17,12 @@ class PedidoModel
         try {
             $this->db->beginTransaction();
 
-            // CONSEGUÍ EL CAJA_ID ACTUAL
             $cajaModel = new \app\models\CajaModel();
             $cajaId = $cajaModel->obtenerCajaIdActual();
 
-            // Ahora insertamos cerrado = 0 sí o sí, y el caja_id
             $stmt = $this->db->prepare("INSERT INTO pedidos (mesa_id, mozo_id, total, cerrado, caja_id) VALUES (?, ?, ?, 0, ?)");
             $stmt->execute([$mesaId, $mozoId, $total, $cajaId]);
-            
+
             $pedidoId = $this->db->lastInsertId();
 
             $stmtDetalle = $this->db->prepare(
@@ -44,25 +42,6 @@ class PedidoModel
         }
     }
 
-    public function crearPedido($mesaId, $mozoId)
-    {
-        $db = \DataBase::getInstance()->getConnection();
-
-        // Busca si ya hay uno abierto hoy para esta mesa
-        $stmt = $db->prepare("SELECT id FROM pedidos WHERE mesa_id = ? AND cerrado = 0 AND DATE(fecha) = CURDATE()");
-        $stmt->execute([$mesaId]);
-        $pedido = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-        if ($pedido) {
-            // Ya hay un pedido abierto, devolvé su ID
-            return $pedido['id'];
-        } else {
-            // Crear nuevo pedido...
-            // ...
-        }
-    }
-
-    // MÉTODO CORREGIDO: Solo cierra los pedidos ABIERTOS de hoy para la mesa
     public function cerrarPedidosDeHoyPorMesa($mesaId, $medioPago)
     {
         $db = \DataBase::getInstance()->getConnection();
@@ -70,7 +49,6 @@ class PedidoModel
         try {
             $db->beginTransaction();
 
-            // Primero, calculamos el total real basado en los productos del pedido
             $sqlTotal = "
                 SELECT SUM(pd.cantidad * p.precio) as total_real
                 FROM pedidos pe
@@ -83,7 +61,6 @@ class PedidoModel
             $resultado = $stmtTotal->fetch(\PDO::FETCH_ASSOC);
             $totalReal = $resultado['total_real'] ?? 0;
 
-            // Ahora actualizamos el total y cerramos SOLO los pedidos abiertos de hoy
             $stmt = $db->prepare("
                 UPDATE pedidos 
                 SET cerrado = 1, metodo_pago = ?, total = ? 
@@ -99,7 +76,9 @@ class PedidoModel
         }
     }
 
-    // SOLO UNA VEZ ESTE MÉTODO
+    /**
+     * Devuelve los detalles y si el pedido está cerrado o no
+     */
     public function obtenerDetalleCuentaPorPedido($pedidoId)
     {
         $db = $this->db;
@@ -108,14 +87,14 @@ class PedidoModel
         $pedido = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if (!$pedido) {
-            return ['mesa' => [], 'productos' => [], 'total' => 0];
+            return ['mesa' => [], 'productos' => [], 'total' => 0, 'cerrado' => 1];
         }
 
         $mesaId = $pedido['mesa_id'];
         $stmtMesa = $db->prepare("SELECT * FROM mesas WHERE id = ?");
         $stmtMesa->execute([$mesaId]);
         $mesa = $stmtMesa->fetch(\PDO::FETCH_ASSOC);
-        if (!$mesa) $mesa = []; // <--- OJO, no dejarlo en false
+        if (!$mesa) $mesa = [];
 
         $stmtProd = $db->prepare(
             "SELECT pd.*, pr.nombre, pr.descripcion, pr.precio
@@ -133,10 +112,67 @@ class PedidoModel
         return [
             'mesa' => $mesa,
             'productos' => $productos,
-            'total' => $total
+            'total' => $total,
+            'cerrado' => $pedido['cerrado']
         ];
     }
 
+    /**
+     * Devuelve detalles del pedido abierto de una mesa (si existe).
+     * Si hay pedido, trae pedido_id y cerrado.
+     */
+    public function obtenerDetalleCuentaPorMesa($mesaId)
+    {
+        $db = \DataBase::getInstance()->getConnection();
+
+        // Buscar pedido (abierto o cerrado) de hoy, el último
+        $stmtPedido = $db->prepare("SELECT id, cerrado FROM pedidos WHERE mesa_id = ? AND DATE(fecha) = CURDATE() ORDER BY id DESC LIMIT 1");
+        $stmtPedido->execute([$mesaId]);
+        $pedido = $stmtPedido->fetch(\PDO::FETCH_ASSOC);
+
+        if (!$pedido) {
+            $mesa = $db->prepare("SELECT * FROM mesas WHERE id = ?");
+            $mesa->execute([$mesaId]);
+            return [
+                'mesa' => $mesa->fetch(),
+                'productos' => [],
+                'total' => 0,
+                'cerrado' => 1
+            ];
+        }
+
+        $pedidoId = $pedido['id'];
+        $cerrado = $pedido['cerrado'];
+
+        $stmtProd = $db->prepare(
+            "SELECT pd.*, pr.nombre, pr.descripcion, pr.precio
+             FROM pedido_detalle pd
+             JOIN productos pr ON pd.producto_id = pr.id
+             WHERE pd.pedido_id = ?"
+        );
+        $stmtProd->execute([$pedidoId]);
+        $productos = $stmtProd->fetchAll(\PDO::FETCH_ASSOC);
+
+        $total = 0;
+        foreach ($productos as $prod) {
+            $total += $prod['precio'] * $prod['cantidad'];
+        }
+
+        $mesa = $db->prepare("SELECT * FROM mesas WHERE id = ?");
+        $mesa->execute([$mesaId]);
+
+        return [
+            'mesa' => $mesa->fetch(),
+            'productos' => $productos,
+            'total' => $total,
+            'cerrado' => $cerrado,
+            'pedido_id' => $pedidoId
+        ];
+    }
+
+    /**
+     * Obtiene todos los pedidos del día con detalle de productos
+     */
     public function obtenerPedidosDelDiaConDetalle()
     {
         $sql = "
@@ -164,6 +200,9 @@ class PedidoModel
         return $stmt->fetchAll();
     }
 
+    /**
+     * Actualiza el estado general del pedido (no de cada producto)
+     */
     public function actualizarEstado($id, $estado)
     {
         $stmt = $this->db->prepare("UPDATE pedidos SET estado = :estado WHERE id = :id");
@@ -173,36 +212,9 @@ class PedidoModel
         ]);
     }
 
-    public function obtenerDetalleCuentaPorMesa($mesaId)
-    {
-        $db = \DataBase::getInstance()->getConnection();
-
-        $sql = "
-            SELECT p.id AS pedido_id, pr.nombre AS nombre, pr.nombre AS producto, pr.descripcion, pd.cantidad, pr.precio, (pd.cantidad * pr.precio) AS subtotal
-            FROM pedidos p
-            JOIN pedido_detalle pd ON p.id = pd.pedido_id
-            JOIN productos pr ON pd.producto_id = pr.id
-            WHERE p.mesa_id = ? AND DATE(p.fecha) = CURDATE() AND p.cerrado = 0
-        ";
-        $stmt = $db->prepare($sql);
-        $stmt->execute([$mesaId]);
-        $productos = $stmt->fetchAll();
-
-        $total = 0;
-        foreach ($productos as $p) {
-            $total += $p['subtotal'];
-        }
-
-        $mesa = $db->prepare("SELECT * FROM mesas WHERE id = ?");
-        $mesa->execute([$mesaId]);
-
-        return [
-            'mesa' => $mesa->fetch(),
-            'productos' => $productos,
-            'total' => $total
-        ];
-    }
-
+    /**
+     * Actualiza el estado de un producto dentro del pedido
+     */
     public function actualizarEstadoProducto($detalleId, $estado)
     {
         $stmt = $this->db->prepare("UPDATE pedido_detalle SET estado = :estado WHERE id = :id");
@@ -212,6 +224,9 @@ class PedidoModel
         ]);
     }
 
+    /**
+     * Obtiene todos los pedidos abiertos (no cerrados) por mesa
+     */
     public function obtenerPedidosActivosPorMesa($mesaId)
     {
         $db = \DataBase::getInstance()->getConnection();
@@ -235,4 +250,5 @@ class PedidoModel
 
         return $pedidos;
     }
+
 }

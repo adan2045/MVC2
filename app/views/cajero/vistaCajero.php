@@ -215,9 +215,9 @@
                             <?php if ($estado === 'disponible'): ?>
                                 <button class="vistaCajero-action-btn vistaCajero-btn-view">Asignar Mesa</button>
                             <?php else: ?>
+                                <!-- VER CUENTA ahora va SIEMPRE por el NUMERO -->
                                 <button class="vistaCajero-action-btn vistaCajero-btn-view"
-                                    onclick="location.href='<?= $ruta ?>/cajero/cuenta?id=<?= $mesa['id'] ?>'">Ver
-                                    Cuenta</button>
+                                    onclick="location.href='<?= $ruta ?>/cajero/cuenta?mesa=<?= $mesa['numero'] ?>'">Ver Cuenta</button>
                                 <?php if ($mesa['total'] > 0): ?>
                                     <button class="vistaCajero-action-btn vistaCajero-btn-close"
                                         onclick="cerrarMesa(<?= $mesa['id'] ?>)">Cerrar Mesa</button>
@@ -252,7 +252,6 @@
                 });
         }
 
-        // Ocultar menú hamburguesa si se abre fuera
         document.addEventListener('click', function (e) {
             const menu = document.getElementById('logoutMenu');
             if (menu && !e.target.matches('.hamburger')) {
@@ -260,7 +259,6 @@
             }
         });
 
-        // Recarga automática cada 10 segundos (mantener SIEMPRE ACTIVA)
         setInterval(() => {
             fetch(location.href)
                 .then(res => res.text())
@@ -275,21 +273,6 @@
         }, 10000);
 
         function cerrarMesa(mesaId) {
-            fetch('<?= $ruta ?>/cajero/cerrarMesa', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'mesa_id=' + mesaId
-            })
-                .then(res => res.text())
-                .then(res => {
-                    if (res.trim() === 'ok') {
-                        location.reload();
-                    } else {
-                        alert('Error al cerrar la mesa');
-                    }
-                });
-        }
-        function cerrarMesa(mesaId) {
             fetch('<?= $ruta ?>/mesa/solicitarCuenta', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -298,65 +281,12 @@
                 .then(res => res.text())
                 .then(res => {
                     if (res.trim() === 'ok') {
-                        // window.print(); // Descomentá si querés imprimir
                         window.location.href = '<?= $ruta ?>/cajero/vistaCajero';
                     } else {
                         alert('Error al cerrar la mesa');
                     }
                 });
         }
-            /*
-        // ------ BLOQUE DE IMPRESIÓN AUTOMÁTICA DE COMANDA ------
-        // El controlador debe pasar la variable $pedidos igual que en listado
-        const pedidosJS = <?= json_encode($pedidos ?? []) ?>;
-
-        let ultimoIdGuardado = localStorage.getItem('ultimoPedidoIdCajero') || 0;
-        let ultimoPedido = pedidosJS.length ? pedidosJS[0] : null;
-
-        // Solo imprime si hay un pedido nuevo; luego sigue la recarga automática de siempre
-        if (ultimoPedido && ultimoPedido.pedido_id != ultimoIdGuardado) {
-            imprimirComanda(ultimoPedido.pedido_id);
-            localStorage.setItem('ultimoPedidoIdCajero', ultimoPedido.pedido_id);
-        }
-
-        function imprimirComanda(pedidoId) {
-            const items = pedidosJS.filter(p => p.pedido_id == pedidoId);
-            if (!items.length) return;
-
-            // Ajustamos todo: fuente grande, mucho padding, y descripción incluida
-            let comandaHTML = `
-        <div style="font-family: monospace; font-size: 18px; width: 360px; padding: 22px;">
-            <div style="text-align:center;">
-                <span style="font-size:26px; font-weight:bold; letter-spacing:2px; display:block;">PIZZERÍA SANTA MARÍA</span>
-                <span style="font-size:22px; font-weight:bold; margin-top:6px;">--- COCINA ---</span>
-            </div>
-            <hr style="margin:18px 0;">
-            <div style="font-size:20px; margin-bottom:10px;">Mesa: <strong>${items[0].mesa_numero}</strong></div>
-            <div style="font-size:18px; margin-bottom:10px;">Mozo: <strong>${(items[0].mozo_nombre ? items[0].mozo_nombre : "Cliente") + " " + (items[0].mozo_apellido || "")}</strong></div>
-            <div style="font-size:18px; margin-bottom:16px;">Hora: <strong>${items[0].hora}</strong></div>
-            <div style="font-size:18px;">
-                <strong>Pedido:</strong>
-                <ul style="padding-left:18px; font-size:18px; margin:10px 0;">
-                    ${items.map(item => `<li>
-                        <div style="font-size:18px;">
-                            <strong>${item.cantidad} x ${item.producto_nombre}</strong><br>
-                            <span style="font-size:16px; color:#555;">${item.producto_descripcion || ''}</span>
-                        </div>
-                    </li>`).join('')}
-                </ul>
-            </div>
-            <hr style="margin:22px 0;">
-        </div>
-    `;
-
-            const printWindow = window.open('', '', 'width=420,height=700');
-            printWindow.document.write(comandaHTML);
-            printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
-            printWindow.close();
-        }*/
     </script>
 </body>
-
 </html>

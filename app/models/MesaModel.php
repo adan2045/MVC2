@@ -134,6 +134,7 @@ class MesaModel
         $resultado = $this->db->query($sql, [$id], true);
         return $resultado[0] ?? null;
     }
+    
 
     public function actualizar($id, $qr_code, $estado, $link_qr, $numero)
     {
@@ -185,4 +186,5 @@ public function cerrarMesaYSolicitarCuenta($mesaId)
         return false;
     }
 }
+
 }
