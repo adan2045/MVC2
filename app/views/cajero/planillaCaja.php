@@ -366,6 +366,7 @@ $ultimoCierre = method_exists($modeloCaja, 'obtenerUltimoCierre') ? $modeloCaja-
                 <button type="button" onclick="abrirCajaFuerteModal()">Caja Fuerte</button>
                 <button onclick="cerrarCaja()">Cerrar Caja</button>
                 <button onclick="window.print()">Imprimir</button>
+                <a href="<?= $ruta ?>/cajero/libroDiario"><button>Movimientos</button></a>
                 <a href="<?= $ruta ?>/admin/gestion"><button>Menu Principal</button></a>
             </div>
         </div>

@@ -20,15 +20,10 @@
              <a href="<?=$ruta?>mesa/listado" class="action-btn">Mesas</a>
              <a href="<?=$ruta?>usuario/listado" class="action-btn delete-btn">Usuarios</a>
              <a href="<?=$ruta?>producto/listado" class="action-btn">Carta</a> 
-</div>
         </div>
+        
 
-        <div class="local-card add-local">
-            <div class="local-icon">
-                <i class="fas fa-plus"></i>
-            </div>
-            <h3>Agregar Local</h3>
-        </div>
+       
     </div>
 </main>
     <?= $footer ?>   

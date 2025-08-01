@@ -16,9 +16,7 @@
             <form action="http://localhost/MVC2/login/login" method="post">
                 <button type="submit" class="btn">Iniciar Sesión</button>
             </form>
-            <form action="http://localhost/MVC2/registro/registro" method="post">
-                <button type="submit" class="btn">Registrarse</button>
-            </form>
+            
         </div>
     </nav>
 </header>
@@ -93,10 +91,7 @@
 </section>
 
 
-	<!-- boton whatsapp -->
-	<a href="https://wa.me/1234567890" class="whatsapp-button" target="_blank">
-        <i class="fab fa-whatsapp"></i>
-    </a>
+	
 	<?=$footer ?>
    
 </body>

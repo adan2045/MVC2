@@ -1,6 +1,11 @@
-<?php
-namespace app\controllers;
-use \Controller;
+<?p-
+-h
+-++-p
+names
+
+-+pace app\controllers;
+use
+ \Controller;
 use \Response;
 use \DataBase;
 use app\controllers\SesionController;
